@@ -72,8 +72,9 @@ phina.define('Main', {
     }
 
   },
-
+  
   onpointstart: function() {
+  clearInterval(countdown);
   this.exit();
 },
 
