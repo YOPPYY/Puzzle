@@ -12,7 +12,8 @@ var col=10;
 var ar=[];
 var check_h=[];
 var check_v=[];
-var del =[];
+var check =[];
+var queue=[];
 
 var ASSETS = {
   image: {
@@ -74,6 +75,12 @@ phina.define('Main', {
     }
 
     // 配列作成　コンボ
+    check = new Array(row);
+    for (y=0; y<ar.length; y++){
+      check[y] = new Array(col).fill(0);;
+    }
+
+    // 配列作成　コンボ
     del = new Array(row);
     for (y=0; y<ar.length; y++){
       del[y] = new Array(col).fill(0);;
@@ -108,7 +115,7 @@ phina.define('Main', {
 
           for(var i=0; i<3; i++){
             check_h[y][x+i]=temp+1;
-            console.log(y + "," + x + " + i");
+            //console.log(y + "," + x + " + i");
           }
         }
       }
@@ -119,7 +126,7 @@ phina.define('Main', {
       for(var y=0;y<col-2; y++){
         var temp = ar[y][x];
         if(temp == ar[y+1][x] && temp == ar[y+2][x]){
-          console.log("hit(v) "+ temp);
+          //console.log("hit(v) "+ temp);
 
           for(var i=0; i<3; i++){
             check_v[y+i][x]=temp+1;
@@ -134,26 +141,103 @@ phina.define('Main', {
       for(var x=0;x<row; x++){
 
         if(check_h[y][x] > 0){
-          del[y][x] = check_h[y][x];
-          console.log()
+          check[y][x] = check_h[y][x];
         }
+
         if(check_v[y][x] > 0){
-          del[y][x] = check_v[y][x];
+          check[y][x] = check_v[y][x];
         }
       }
     }
-    console.log(del);
+    //console.log(check);
 
 
     //コンボ探索
-    //同じidを辿って塊をカウントしていく
-    //連続で曲がらないようにする（ワロス消し）
-    //idをコンボ数で置き換える
+    /*
+    0. 盤面内のドロップを繰り返しで調べる。カウント未設定かつコンボ状態のドロップであれば、対象ドロップとする。
+    (check)
+    1. 対象ドロップに現在のカウントを設定する。
 
+    2. 対象ドロップの上下左右を調べ、コンボ状態かつ同じ色のドロップがあれば、ドロップの位置情報をキューに格納する。
+
+    3. キューからドロップの位置情報を取り出し、対象ドロップとする。
+
+    4. キューの中身が無くなるまで1～3を繰り返す。中身が無くなったら、カウントアップ（+1）して次のドロップの調査へ移る。
+    */
+
+
+    var combo=0;
+
+    //0. 盤面内のドロップを繰り返しで調べる。カウント未設定かつコンボ状態のドロップであれば、対象ドロップとする。
+    for(var y=0; y<col; y++){
+      for(var x=0; x<row; x++){
+
+        if(check[x][y] != 0 && del[x][y]==0){
+
+          queue.push([x,y]);//対象ドロップ
+
+        }
+
+          if(queue.length>0){
+            // 1. 対象ドロップに現在のカウントを設定する。
+            var element = queue.shift();
+            var posy= element[0];
+            var posx= element[1];
+            //console.log(posy +"," + posx);
+            console.log(queue);
+            del[posx][posy]=combo+1;
+
+            // 2. 対象ドロップの上下左右を調べ、コンボ状態かつ同じ色のドロップがあれば、ドロップの位置情報をキューに格納する。
+
+            //上
+            if(posy<col-1){
+              if(check[posx][posy] == check[posx][posy+1] && check[posx][posy+1] != 0){
+                queue.push([posx,posy+1]);
+              }
+            }
+
+            //下
+            if(posy>0){
+              if(check[posx][posy] == check[posx][posy-1] && check[posx][posy-1] != 0){
+                queue.push([posx,posy-1]);
+              }
+            }
+
+            //左
+            if(posx>0){
+              if(check[posx][posy] == check[posx-1][posy] && check[posx-1][posy] != 0){
+                queue.push([posx-1,posy]);
+              }
+            }
+
+            //右
+            if(posx<row-1){
+              if(check[posx][posy] == check[posx+1][posy] && check[posx+1][posy] != 0){
+                queue.push([posx+1,posy]);
+              }
+            }
+
+            //3. キューからドロップの位置情報を取り出し、対象ドロップとする。
+
+
+
+
+          }
+
+
+            combo++;
+
+
+          //console.log(queue);
+
+
+      }
+    }
 
     //消去
     //コンボ順に消す
 
+    console.log(del);
 
 
   },
