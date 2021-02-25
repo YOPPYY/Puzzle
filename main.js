@@ -117,7 +117,7 @@ phina.define('Main', {
         var sprite = Sprite(coins[id]).setScale(0.1).addChildTo(group);
         sprites[j][i]=sprite;
         sprite.x=100+i*50;
-        sprite.y=860-j*50;
+        sprite.y=910-j*50;
         //sprite.y=480+j*50;
         //sprite.y=860-j*50;
 
