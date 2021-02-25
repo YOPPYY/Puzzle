@@ -8,7 +8,7 @@ var SCREEN_HEIGHT = 960;
 var coins =["coin1","coin5","coin10","coin50","coin100","coin500"];
 
 var row=10;
-var col=10;
+var col=20;
 var ar=[];
 var sprites=[];
 var check_h=[];//
