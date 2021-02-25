@@ -8,7 +8,7 @@ var SCREEN_HEIGHT = 960;
 var coins =["coin1","coin5","coin10","coin50","coin100","coin500"];
 
 var row=10;
-var col=20;
+var col=15;
 var ar=[];
 var sprites=[];
 var check_h=[];//
@@ -50,7 +50,7 @@ phina.define('Main', {
       text:'タイトル',
       fontSize: 48,
       x:this.gridX.center(),
-      y:this.gridY.center()-50,
+      y:100,
       fill:'white',
       stroke:'blue',
       strokeWidth:5,
@@ -61,51 +61,51 @@ phina.define('Main', {
     this.backgroundColor = '#444';
 
     // ar[y][x] の2次元配列を作成する
-    ar = new Array(row);
+    ar = new Array(col);
     for (y=0; y<ar.length; y++){
-      ar[y] = new Array(col).fill(0);;
+      ar[y] = new Array(row).fill(0);;
     }
 
     // ar[y][x] の2次元配列を作成する
-    sprites = new Array(row);
+    sprites = new Array(col);
     for (y=0; y<ar.length; y++){
-      sprites[y] = new Array(col).fill(0);;
+      sprites[y] = new Array(row).fill(0);;
     }
 
     // チェック用配列作成　縦
-    check_v = new Array(row);
+    check_v = new Array(col);
     for (y=0; y<ar.length; y++){
-      check_v[y] = new Array(col).fill(0);;
+      check_v[y] = new Array(row).fill(0);;
     }
 
     // チェック用配列作成　横
-    check_h = new Array(row);
+    check_h = new Array(col);
     for (y=0; y<ar.length; y++){
-      check_h[y] = new Array(col).fill(0);;
+      check_h[y] = new Array(row).fill(0);;
     }
 
     // 配列作成　縦横
-    check = new Array(row);
+    check = new Array(col);
     for (y=0; y<ar.length; y++){
-      check[y] = new Array(col).fill(0);;
+      check[y] = new Array(row).fill(0);;
     }
 
     // 配列作成
-    search = new Array(row);
+    search = new Array(col);
     for (y=0; y<ar.length; y++){
-      search[y] = new Array(col).fill(0);;
+      search[y] = new Array(row).fill(0);;
     }
 
     // 配列作成　コンボ
-    del = new Array(row);
+    del = new Array(col);
     for (y=0; y<ar.length; y++){
-      del[y] = new Array(col).fill(0);;
+      del[y] = new Array(row).fill(0);;
     }
 
     // 配列作成　コンボ
-    visied = new Array(row);
+    visied = new Array(col);
     for (y=0; y<ar.length; y++){
-      visited[y] = new Array(col).fill(0);;
+      visited[y] = new Array(row).fill(0);;
     }
 
     var group = DisplayElement().addChildTo(this);
@@ -311,6 +311,7 @@ phina.define('Main', {
           sprites[posy][posx].tweener.fadeOut(1000)
           .call(function() {
             this.remove;
+            //label.text="combo";
             animation();
           })
           .play();
