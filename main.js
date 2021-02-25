@@ -298,6 +298,7 @@ phina.define('Main', {
 
     function animation(){
 
+
     if(target.length>0){
       var temp = target.shift();
       while(temp.length>0){
@@ -311,6 +312,7 @@ phina.define('Main', {
           sprites[posy][posx].tweener.fadeOut(1000)
           .call(function() {
             this.remove;
+            //console.log(combo);
             //label.text="combo";
             animation();
           })
