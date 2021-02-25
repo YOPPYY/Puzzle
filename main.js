@@ -10,12 +10,14 @@ var coins =["coin1","coin5","coin10","coin50","coin100","coin500"];
 var row=10;
 var col=10;
 var ar=[];
-var check_h=[];
-var check_v=[];
-var check =[];
+var sprites=[];
+var check_h=[];//
+var check_v=[];//
+var check =[];//
 var queue=[];
 var del=[];
 var visited=[];
+var target=[];
 
 var ASSETS = {
   image: {
@@ -64,6 +66,12 @@ phina.define('Main', {
       ar[y] = new Array(col).fill(0);;
     }
 
+    // ar[y][x] の2次元配列を作成する
+    sprites = new Array(row);
+    for (y=0; y<ar.length; y++){
+      sprites[y] = new Array(col).fill(0);;
+    }
+
     // チェック用配列作成　縦
     check_v = new Array(row);
     for (y=0; y<ar.length; y++){
@@ -100,14 +108,17 @@ phina.define('Main', {
       visited[y] = new Array(col).fill(0);;
     }
 
+    var group = DisplayElement().addChildTo(this);
     //表示
     for(j=0;j<col;j++){
       for(i=0;i<row;i++){
         var id= Math.floor(Math.random()*(coins.length-3));
         ar[j][i] = id;
-        var sprite = Sprite(coins[id]).setScale(0.1).addChildTo(this);
+        var sprite = Sprite(coins[id]).setScale(0.1).addChildTo(group);
+        sprites[j][i]=sprite;
         sprite.x=100+i*50;
-        sprite.y=480+j*50;
+        sprite.y=860-j*50;
+        //sprite.y=480+j*50;
         //sprite.y=860-j*50;
 
       }
@@ -264,10 +275,65 @@ phina.define('Main', {
     console.log("終了");
     console.log(del);
 
-    for(var i=1; i<0; i++){
-      alpha -= 0.05;
+    console.log(combo);
 
+
+    //コンボ数ぶん繰り返す
+    for(var i=1; i<combo; i++){
+      var temp=[];
+
+      //検索してキューに追加
+      for(var y=0; y<col; y++){
+        for(var x=0; x<row; x++){
+          if(del[y][x] ==i){
+            var object={y:y, x:x};
+            temp.push(object);
+          }
+        }
+      }
+      target.push(temp);
     }
+
+    animation();
+
+    function animation(){
+
+    if(target.length>0){
+      var temp = target.shift();
+      while(temp.length>0){
+
+        var element = temp.shift();
+        var posx= element.x;
+        var posy= element.y;
+
+
+        if(temp.length==0){
+          sprites[posy][posx].tweener.fadeOut(1000)
+          .call(function() {
+            this.remove;
+            animation();
+          })
+          .play();
+        }
+
+        else{
+          //フェードアウト
+          sprites[posy][posx].tweener.fadeOut(1000)
+          .call(function() {
+            this.remove;
+          })
+          .play();
+        }
+
+
+      }
+    }
+
+  }
+
+
+
+
 
   },
 
