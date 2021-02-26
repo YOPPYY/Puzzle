@@ -7,17 +7,23 @@ var SCREEN_HEIGHT = 960;
 
 var coins =["coin1","coin5","coin10","coin50","coin100","coin500"];
 
-var row=10;
-var col=15;
+var row=8;
+var col=8;
 var ar=[];
 var sprites=[];
+
 var check_h=[];//
 var check_v=[];//
 var check =[];//
-var queue=[];
 var del=[];
+
+
+var queue=[];
 var visited=[];
 var target=[];
+
+var combo=0;
+var countup=0;
 
 var ASSETS = {
   image: {
@@ -46,7 +52,7 @@ phina.define('Main', {
     this.superInit();
     var self=this;
 
-    var label = Label({
+    var label0 = Label({
       text:'タイトル',
       fontSize: 48,
       x:this.gridX.center(),
@@ -55,6 +61,8 @@ phina.define('Main', {
       stroke:'blue',
       strokeWidth:5,
     }).addChildTo(this);
+
+
 
 
     // 背景色を指定
@@ -128,214 +136,236 @@ phina.define('Main', {
   },
 
   onpointstart: function() {
-    var combo=0;
 
+    var label = Label({x:500,y:100,fontSize:32,fill:'white',text:countup}).addChildTo(this);
 
-    //探索　横
-    for(var y=0;y<col; y++){
-      for(var x=0;x<row-2; x++){
-        var temp = ar[y][x];
-        if(temp == ar[y][x+1] && temp == ar[y][x+2]){
-          //console.log("hit(h) "+ temp);
+    matchcheck();
+    connectcheck();
+    animation();
 
-          for(var i=0; i<3; i++){
-            check_h[y][x+i]=temp+1;
-            //console.log(y + "," + x + " + i");
+    function matchcheck(){
+      //探索　横
+      for(var y=0;y<col; y++){
+        for(var x=0;x<row-2; x++){
+          var temp = ar[y][x];
+          if(temp == ar[y][x+1] && temp == ar[y][x+2]){
+            //console.log("hit(h) "+ temp);
+
+            for(var i=0; i<3; i++){
+              check_h[y][x+i]=temp+1;
+              //console.log(y + "," + x + " + i");
+            }
           }
         }
       }
-    }
 
-    //探索　縦
-    for(var x=0;x<row; x++){
-      for(var y=0;y<col-2; y++){
-        var temp = ar[y][x];
-        if(temp == ar[y+1][x] && temp == ar[y+2][x]){
-          //console.log("hit(v) "+ temp);
-
-          for(var i=0; i<3; i++){
-            check_v[y+i][x]=temp+1;
-          }
-        }
-      }
-    }
-
-
-    //探索　横　縦　統合
-    for(var y=0;y<col; y++){
+      //探索　縦
       for(var x=0;x<row; x++){
+        for(var y=0;y<col-2; y++){
+          var temp = ar[y][x];
+          if(temp == ar[y+1][x] && temp == ar[y+2][x]){
+            //console.log("hit(v) "+ temp);
 
-        if(check_h[y][x] > 0){
-          check[y][x] = check_h[y][x];
+            for(var i=0; i<3; i++){
+              check_v[y+i][x]=temp+1;
+            }
+          }
         }
+      }
 
-        if(check_v[y][x] > 0){
-          check[y][x] = check_v[y][x];
+
+      //探索　横　縦　統合
+      for(var y=0;y<col; y++){
+        for(var x=0;x<row; x++){
+
+          if(check_h[y][x] > 0){
+            check[y][x] = check_h[y][x];
+          }
+
+          if(check_v[y][x] > 0){
+            check[y][x] = check_v[y][x];
+          }
         }
       }
     }
-    //console.log(check);
+    function connectcheck(){
+      //最後のマスまで調べ終わったら終了。
+      while(visited[col-1][row-1]==0){
 
+        check_loop:
+        for(var y=0; y<col; y++){
+          for(var x=0; x<row; x++){
+            visited[y][x]=1;
+            if(check[y][x] != 0 && del[y][x]==0){
+              if(queue.length==0){
+                var object={y:y, x:x};
+                queue.push(object);
+                combo++;
+                //console.log(object);
+                //console.log(queue);
+                //console.log("対象:"+y+","+x);
+                break check_loop;//visitedの変更を防ぐためループを抜ける。
+              }
+            }
 
-    //コンボ探索
-    /*
-    0. 盤面内のドロップを繰り返しで調べる。カウント未設定かつコンボ状態のドロップであれば、対象ドロップとする。
-    (check)
-    1. 対象ドロップに現在のカウントを設定する。
+          }
+        }
 
-    2. 対象ドロップの上下左右を調べ、コンボ状態かつ同じ色のドロップがあれば、ドロップの位置情報をキューに格納する。
+        console.log(queue);
 
-    3. キューからドロップの位置情報を取り出し、対象ドロップとする。
+        //4. キューの中身が無くなるまで1～3を繰り返す
+        while(queue.length>0){
+          //3. キューからドロップの位置情報を取り出し、対象ドロップとする。
+          var element = queue.shift();
+          var posx= element.x;
+          var posy= element.y;
 
-    4. キューの中身が無くなるまで1～3を繰り返す。中身が無くなったら、カウントアップ（+1）して次のドロップの調査へ移る。
-    */
+          // 1. 対象ドロップに現在のカウントを設定する。
+          if(del[posy][posx]==0){
+            del[posy][posx]=combo;
+          }
 
+          // 2. 対象ドロップの上下左右を調べ、コンボ状態かつ同じ色のドロップがあれば、ドロップの位置情報をキューに格納する。
 
-    var combo=0;
-    var position ={};
-
-    //0. 盤面内のドロップを繰り返しで調べる。カウント未設定かつコンボ状態のドロップであれば、対象ドロップとする。
-
-    //最後のマスまで調べ終わったら終了。
-    while(visited[col-1][row-1]==0){
-
-      check_loop:
-      for(var y=0; y<col; y++){
-        for(var x=0; x<row; x++){
-          visited[y][x]=1;
-          if(check[y][x] != 0 && del[y][x]==0){
-            if(queue.length==0){
-              var object={y:y, x:x};
+          //上
+          if(posy<col-1){
+            if(check[posy][posx] == check[posy+1][posx] && del[posy+1][posx] == 0){
+              var object={y:posy+1, x:posx};
               queue.push(object);
-              console.log(object);
-              console.log(queue);
-              console.log("対象:"+y+","+x);
-              break check_loop;//visitedの変更を防ぐためループを抜ける。
             }
           }
 
+          //下
+          if(posy>0){
+            if(check[posy][posx] == check[posy-1][posx] && del[posy-1][posx] == 0){
+              var object={y:posy-1, x:posx};
+              queue.push(object);
+            }
+          }
+
+          //左
+          if(posx>0){
+            if(check[posy][posx] == check[posy][posx-1] && del[posy][posx-1] == 0){
+              var object={y:posy, x:posx-1};
+              queue.push(object);
+            }
+          }
+
+          //右
+          if(posx<row-1){
+            if(check[posy][posx] == check[posy][posx+1] && del[posy][posx+1] == 0){
+              var object={y:posy, x:posx+1};
+              queue.push(object);
+            }
+          }
+          console.log(queue);
         }
+
+        //中身が無くなったら、カウントアップ（+1）して次のドロップの調査へ移る。
+
       }
-
-      console.log(queue);
-
-      //4. キューの中身が無くなるまで1～3を繰り返す
-      while(queue.length>0){
-        //3. キューからドロップの位置情報を取り出し、対象ドロップとする。
-        var element = queue.shift();
-        var posx= element.x;
-        var posy= element.y;
-
-        // 1. 対象ドロップに現在のカウントを設定する。
-        if(del[posy][posx]==0){
-          del[posy][posx]=combo+1;
-        }
-
-        // 2. 対象ドロップの上下左右を調べ、コンボ状態かつ同じ色のドロップがあれば、ドロップの位置情報をキューに格納する。
-
-        //上
-        if(posy<col-1){
-          if(check[posy][posx] == check[posy+1][posx] && del[posy+1][posx] == 0){
-            var object={y:posy+1, x:posx};
-            queue.push(object);
-          }
-        }
-
-        //下
-        if(posy>0){
-          if(check[posy][posx] == check[posy-1][posx] && del[posy-1][posx] == 0){
-            var object={y:posy-1, x:posx};
-            queue.push(object);
-          }
-        }
-
-        //左
-        if(posx>0){
-          if(check[posy][posx] == check[posy][posx-1] && del[posy][posx-1] == 0){
-            var object={y:posy, x:posx-1};
-            queue.push(object);
-          }
-        }
-
-        //右
-        if(posx<row-1){
-          if(check[posy][posx] == check[posy][posx+1] && del[posy][posx+1] == 0){
-            var object={y:posy, x:posx+1};
-            queue.push(object);
-          }
-        }
-        console.log(queue);
-      }
-
-      //中身が無くなったら、カウントアップ（+1）して次のドロップの調査へ移る。
-      combo++;
+      //探索完了
+      console.log("終了");
+      console.log(del);
+      console.log(combo);
     }
-
-    //探索完了
-    console.log("終了");
-    console.log(del);
-
-    console.log(combo);
-
-
-    //コンボ数ぶん繰り返す
-    for(var i=1; i<combo; i++){
-      var temp=[];
-
-      //検索してキューに追加
-      for(var y=0; y<col; y++){
-        for(var x=0; x<row; x++){
-          if(del[y][x] ==i){
-            var object={y:y, x:x};
-            temp.push(object);
-          }
-        }
-      }
-      target.push(temp);
-    }
-
-    animation();
-
     function animation(){
+      //削除キュー作成　ここから
 
+      for(var i=1; i<=combo; i++){
+        var temp=[];
 
-    if(target.length>0){
-      var temp = target.shift();
-      while(temp.length>0){
-
-        var element = temp.shift();
-        var posx= element.x;
-        var posy= element.y;
-
-
-        if(temp.length==0){
-          sprites[posy][posx].tweener.fadeOut(1000)
-          .call(function() {
-            this.remove;
-            //console.log(combo);
-            //label.text="combo";
-            animation();
-          })
-          .play();
+        //検索してキューに追加
+        for(var y=0; y<col; y++){
+          for(var x=0; x<row; x++){
+            if(del[y][x] ==i){
+              var object={y:y, x:x};
+              temp.push(object);
+            }
+          }
         }
+        target.push(temp);      //コンボ順にならべる
+      }
+      //ここまで
+      if(target.length==0){console.log("0combo");}
+      if(target.length>0){
 
-        else{
-          //フェードアウト
-          sprites[posy][posx].tweener.fadeOut(1000)
-          .call(function() {
-            this.remove;
-          })
-          .play();
+        var temp = target.shift();
+        while(temp.length>0){
+
+          var element = temp.shift();
+          var posx= element.x;
+          var posy= element.y;
+          ar[posy][posx]=-1;
+
+          if(temp.length==0){
+            //countup
+            countup++;
+            console.log(countup);
+            label.text=countup;
+            sprites[posy][posx].tweener.fadeOut(500)
+            .call(function() {
+              this.remove();
+              if(countup==combo){fall();}
+              else{animation();}
+            })
+            .play();
+          }
+
+          else{
+            //フェードアウト
+            sprites[posy][posx].tweener.fadeOut(500)
+            .call(function() {
+              this.remove();
+            })
+            .play();
+          }
         }
-
-
       }
     }
 
-  }
+    function fall(){
+      console.log("位置変更");
+
+      for(x=0; x<row; x++){
+
+        var temp=new Array(col);
+        var space=0;
 
 
+        for(y=0; y<col; y++){
 
+          if(ar[y][x]==-1){
+            space++;
+          }
+          else{
+            //移動
+            ar[y-space][x] = ar[y][x];
+            sprites[y][x].tweener.moveBy(0, space*50, 500)
+            .call(function() {
+              spritechange();
+            })
+            .play();
+          }
+
+        }
+
+        //移動前の要素を空(-1)にする
+        for(n=0; n<space; n++){
+          ar[col-n-1][x]=-1;
+        }
+
+      }
+      adddrop();
+    }
+
+    function spritechange(){
+
+    }
+
+    function adddrop(){
+
+    }
 
 
   },
@@ -388,3 +418,16 @@ phina.main(function() {
   // 実行
   app.run();
 });
+
+/*コンボ探索メモ
+
+0. 盤面内のドロップを繰り返しで調べる。カウント未設定かつコンボ状態のドロップであれば、対象ドロップとする。
+(check)
+1. 対象ドロップに現在のカウントを設定する。
+
+2. 対象ドロップの上下左右を調べ、コンボ状態かつ同じ色のドロップがあれば、ドロップの位置情報をキューに格納する。
+
+3. キューからドロップの位置情報を取り出し、対象ドロップとする。
+
+4. キューの中身が無くなるまで1～3を繰り返す。中身が無くなったら、カウントアップ（+1）して次のドロップの調査へ移る。
+*/
