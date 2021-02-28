@@ -35,12 +35,8 @@ var ASSETS = {
     'coin500': 'img/money_coin_reiwa_500_new.png',
   },
   sound: {
-    'bgm1': 'sound/bgm1.mp3',
-    'bgm2': 'sound/bgm2.mp3',
-    'timer': 'sound/timer.mp3',
-    'button': 'sound/button.mp3',
-    'maru': 'sound/maru.mp3',
-    'batsu': 'sound/batsu.mp3',
+
+    'delete': 'sound/button43.mp3',
 
   },
 };
@@ -270,8 +266,8 @@ phina.define('Main', {
       console.log(combo);
     }
     function animation(){
-      //削除キュー作成　ここから
 
+      //削除キュー作成　ここから
       for(var i=1; i<=combo; i++){
         var temp=[];
 
@@ -287,6 +283,7 @@ phina.define('Main', {
         target.push(temp);      //コンボ順にならべる
       }
       //ここまで
+
       if(target.length==0){console.log("0combo");}
       if(target.length>0){
 
@@ -302,6 +299,7 @@ phina.define('Main', {
             //countup
             countup++;
             console.log(countup);
+            SoundManager.play("delete");
             label.text=countup;
             sprites[posy][posx].tweener.fadeOut(500)
             .call(function() {
@@ -322,6 +320,7 @@ phina.define('Main', {
           }
         }
       }
+      console.log(target);
     }
 
     function fall(){
