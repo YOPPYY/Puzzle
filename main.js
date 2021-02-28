@@ -7,8 +7,8 @@ var SCREEN_HEIGHT = 960;
 
 var coins =["coin1","coin5","coin10","coin50","coin100","coin500"];
 
-var row=8;
-var col=8;
+var row=4;
+var col=4;
 var ar=[];
 var sprites=[];
 
@@ -127,7 +127,7 @@ phina.define('Main', {
 
       }
     }
-    console.log(ar);
+    //console.log(ar);
 
   },
 
@@ -140,6 +140,7 @@ phina.define('Main', {
     animation();
 
     function matchcheck(){
+
       //探索　横
       for(var y=0;y<col; y++){
         for(var x=0;x<row-2; x++){
@@ -207,7 +208,7 @@ phina.define('Main', {
           }
         }
 
-        console.log(queue);
+        //console.log(queue);
 
         //4. キューの中身が無くなるまで1～3を繰り返す
         while(queue.length>0){
@@ -254,17 +255,17 @@ phina.define('Main', {
               queue.push(object);
             }
           }
-          console.log(queue);
         }
 
         //中身が無くなったら、カウントアップ（+1）して次のドロップの調査へ移る。
 
       }
       //探索完了
-      console.log("終了");
-      console.log(del);
-      console.log(combo);
+      //console.log("終了");
+      //console.log(del);
+      //console.log(combo);
     }
+
     function animation(){
 
       //削除キュー作成　ここから
@@ -283,10 +284,11 @@ phina.define('Main', {
         target.push(temp);      //コンボ順にならべる
       }
       //ここまで
-
-      if(target.length==0){console.log("0combo");}
+      console.log(queue);
+      //if(target.length==0){console.log("0combo");}
       if(target.length>0){
 
+        console.log(target)
         var temp = target.shift();
         while(temp.length>0){
 
@@ -320,7 +322,7 @@ phina.define('Main', {
           }
         }
       }
-      console.log(target);
+      console.log(queue);
     }
 
     function fall(){
