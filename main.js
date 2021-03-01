@@ -414,7 +414,7 @@ phina.define('Main', {
           if(sprite_moving==0){
             console.log("移動完了　再判定");
             Reset();
-            matchcheck();
+
           }
         })
         .play();
@@ -446,6 +446,8 @@ phina.define('Main', {
         sprites2[y][x].remove();
       }
     }
+    console.log("repeat");
+                //matchcheck();
   }
 
 
