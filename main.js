@@ -7,9 +7,10 @@ var SCREEN_HEIGHT = 960;
 
 var coins =["coin1","coin5","coin10","coin50","coin100","coin500"];
 
-var row=4;
-var col=4;
+var row=10;
+var col=10;
 var ar=[];
+var ar2=[];
 var sprites=[];
 
 var check_h=[];//
@@ -41,9 +42,25 @@ var ASSETS = {
   },
 };
 
+var ASSETS_AFTER = {
+  image: {
+    'coin1': 'img/money_coin_heisei_1.png',
+    'coin5': 'img/money_coin_blank_5.png',
+    'coin10': 'img/money_coin_heisei_10.png',
+    'coin50': 'img/money_coin_heisei_50.png',
+    'coin100': 'img/money_coin_heisei_100.png',
+    'coin500': 'img/money_coin_reiwa_500_new.png',
+  },
+  sound: {
+
+    'delete': 'sound/button43.mp3',
+
+  },
+};
+
 // MainScene クラスを定義
 phina.define('Main', {
-  superClass: 'CanvasScene',
+  superClass: 'DisplayScene',
   init: function() {
     this.superInit();
     var self=this;
@@ -64,55 +81,67 @@ phina.define('Main', {
     // 背景色を指定
     this.backgroundColor = '#444';
 
-    // ar[y][x] の2次元配列を作成する
-    ar = new Array(col);
-    for (y=0; y<ar.length; y++){
-      ar[y] = new Array(row).fill(0);;
-    }
+    makearray();
 
-    // ar[y][x] の2次元配列を作成する
-    sprites = new Array(col);
-    for (y=0; y<ar.length; y++){
-      sprites[y] = new Array(row).fill(0);;
-    }
+    function makearray(){
+      // ar[y][x] の2次元配列を作成する
+      ar = new Array(col);
+      for (y=0; y<ar.length; y++){
+        ar[y] = new Array(row).fill(0);;
+      }
 
-    // チェック用配列作成　縦
-    check_v = new Array(col);
-    for (y=0; y<ar.length; y++){
-      check_v[y] = new Array(row).fill(0);;
-    }
+      // ar[y][x] の2次元配列を作成する
+      sprites = new Array(col);
+      for (y=0; y<ar.length; y++){
+        sprites[y] = new Array(row).fill(0);;
+      }
 
-    // チェック用配列作成　横
-    check_h = new Array(col);
-    for (y=0; y<ar.length; y++){
-      check_h[y] = new Array(row).fill(0);;
-    }
+      // ar2[y][x] の2次元配列を作成する
+      ar2 = new Array(col);
+      for (y=0; y<ar.length; y++){
+        ar2[y] = new Array(row).fill(0);;
+      }
 
-    // 配列作成　縦横
-    check = new Array(col);
-    for (y=0; y<ar.length; y++){
-      check[y] = new Array(row).fill(0);;
-    }
+      // sprite[y][x] の2次元配列を作成する
+      sprites2 = new Array(col);
+      for (y=0; y<ar.length; y++){
+        sprites2[y] = new Array(row).fill(0);;
+      }
 
-    // 配列作成
-    search = new Array(col);
-    for (y=0; y<ar.length; y++){
-      search[y] = new Array(row).fill(0);;
-    }
+      // チェック用配列作成　縦
+      check_v = new Array(col);
+      for (y=0; y<ar.length; y++){
+        check_v[y] = new Array(row).fill(0);;
+      }
 
-    // 配列作成　コンボ
-    del = new Array(col);
-    for (y=0; y<ar.length; y++){
-      del[y] = new Array(row).fill(0);;
-    }
+      // チェック用配列作成　横
+      check_h = new Array(col);
+      for (y=0; y<ar.length; y++){
+        check_h[y] = new Array(row).fill(0);;
+      }
 
-    // 配列作成　コンボ
-    visied = new Array(col);
-    for (y=0; y<ar.length; y++){
-      visited[y] = new Array(row).fill(0);;
+      // 配列作成　縦横
+      check = new Array(col);
+      for (y=0; y<ar.length; y++){
+        check[y] = new Array(row).fill(0);;
+      }
+
+
+      // 配列作成　コンボ
+      del = new Array(col);
+      for (y=0; y<ar.length; y++){
+        del[y] = new Array(row).fill(0);;
+      }
+
+      // 配列作成　コンボ
+      visied = new Array(col);
+      for (y=0; y<ar.length; y++){
+        visited[y] = new Array(row).fill(0);;
+      }
     }
 
     var group = DisplayElement().addChildTo(this);
+    var self=this;
     //表示
     for(j=0;j<col;j++){
       for(i=0;i<row;i++){
@@ -133,13 +162,15 @@ phina.define('Main', {
 
   onpointstart: function() {
 
+    var group = DisplayElement().addChildTo(this);
     var label = Label({x:500,y:100,fontSize:32,fill:'white',text:countup}).addChildTo(this);
 
     matchcheck();
-    connectcheck();
-    animation();
+
 
     function matchcheck(){
+      var flag_h = false;
+      var flag_v = false;
 
       //探索　横
       for(var y=0;y<col; y++){
@@ -147,7 +178,7 @@ phina.define('Main', {
           var temp = ar[y][x];
           if(temp == ar[y][x+1] && temp == ar[y][x+2]){
             //console.log("hit(h) "+ temp);
-
+            flag_h = true;
             for(var i=0; i<3; i++){
               check_h[y][x+i]=temp+1;
               //console.log(y + "," + x + " + i");
@@ -162,7 +193,7 @@ phina.define('Main', {
           var temp = ar[y][x];
           if(temp == ar[y+1][x] && temp == ar[y+2][x]){
             //console.log("hit(v) "+ temp);
-
+            flag_v = true;
             for(var i=0; i<3; i++){
               check_v[y+i][x]=temp+1;
             }
@@ -184,7 +215,11 @@ phina.define('Main', {
           }
         }
       }
+      if(flag_h || flag_v ==1){
+        connectcheck();
+      }
     }
+
     function connectcheck(){
       //最後のマスまで調べ終わったら終了。
       while(visited[col-1][row-1]==0){
@@ -264,9 +299,12 @@ phina.define('Main', {
       //console.log("終了");
       //console.log(del);
       //console.log(combo);
+
+
+      comboset();
     }
 
-    function animation(){
+    function comboset(){
 
       //削除キュー作成　ここから
       for(var i=1; i<=combo; i++){
@@ -284,11 +322,15 @@ phina.define('Main', {
         target.push(temp);      //コンボ順にならべる
       }
       //ここまで
-      console.log(queue);
+      //console.log(queue);
+      animation();
+    }
+    function animation(){
       //if(target.length==0){console.log("0combo");}
+      console.log(target)
       if(target.length>0){
 
-        console.log(target)
+
         var temp = target.shift();
         while(temp.length>0){
 
@@ -298,7 +340,6 @@ phina.define('Main', {
           ar[posy][posx]=-1;
 
           if(temp.length==0){
-            //countup
             countup++;
             console.log(countup);
             SoundManager.play("delete");
@@ -322,60 +363,115 @@ phina.define('Main', {
           }
         }
       }
-      console.log(queue);
     }
-
     function fall(){
       console.log("位置変更");
 
+      //表示
+      for(j=0;j<col;j++){
+        for(i=0;i<row;i++){
+          var id= Math.floor(Math.random()*(coins.length-3));
+          ar2[j][i] = id;
+          var sprite = Sprite(coins[id]).setScale(0.1).setPosition(100+i*50,(910-col*50)-j*50).addChildTo(group);
+          sprite.alpha=0.5;
+          sprites2[j][i]=sprite;
+        }
+      }
+
+      var sprite_moving=0; //移動未完了Sprite数
       for(x=0; x<row; x++){
 
-        var temp=new Array(col);
         var space=0;
-
-
         for(y=0; y<col; y++){
 
           if(ar[y][x]==-1){
             space++;
           }
           else{
-            //移動
+            //Spaceぶん下に移動
             ar[y-space][x] = ar[y][x];
-            sprites[y][x].tweener.moveBy(0, space*50, 500)
-            .call(function() {
-              spritechange();
-            })
-            .play();
+            sprites[y][x].tweener.moveBy(0, space*50, 500).play();
           }
 
         }
 
-        //移動前の要素を空(-1)にする
+        /*
+        //空(-1)にする
         for(n=0; n<space; n++){
-          ar[col-n-1][x]=-1;
-        }
-
+        ar[col-n-1][x]=-1;
       }
-      adddrop();
+      */
+
+      //空の数だけid2とspeite2からもってくる
+      for(s=0; s<space; s++){
+        ar[col-space+s][x]=ar2[s][x];
+        console.log(col-space+s+","+x +" <- "+ s +","+x + " ("+ ar2[s][x] +")");
+        sprite_moving++;
+        sprites2[s][x].tweener.moveBy(0, space*50, 500)
+        .call(function() {
+          sprite_moving--;
+
+          if(sprite_moving==0){
+            console.log("移動完了　再判定");
+            Reset();
+            matchcheck();
+          }
+        })
+        .play();
+      }
+
     }
+  }
 
-    function spritechange(){
+  function Reset(){
 
+    var queue=[];
+    var target=[];
+    combo=0;
+
+    //del　リセット
+    //visited　リセット
+    for(var y=0; y<col; y++){
+      for(var x=0; x<row; x++){
+        check[y][x]=0;
+        check_h[y][x]=0;
+        check_v[y][x]=0;
+        del[y][x]=0;
+        visited[y][x]=0;
+
+        //sprite 更新
+        var id = ar[y][x];
+        var sprite = Sprite(coins[id]).setScale(0.1).setPosition(100+x*50,910-y*50).addChildTo(group);
+        sprites[y][x] = sprite;
+        sprites2[y][x].remove();
+      }
     }
-
-    function adddrop(){
-
-    }
+  }
 
 
+
+
+
+},
+
+});
+
+/*
+* Coinクラス
+*/
+phina.define("Coin", {
+  // 継
+  superClass: 'DisplayElement',
+  // 初期化
+  init: function() {
+    // 親クラス初期化
+    this.superInit();
   },
-
 });
 
 // Result クラスを定義
 phina.define('Result', {
-  superClass: 'CanvasScene',
+  superClass: 'DisplayScene',
   init: function() {
     // 親クラス初期化
     this.superInit();
