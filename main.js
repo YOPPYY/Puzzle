@@ -6,7 +6,7 @@ var SCREEN_HEIGHT = 960;
 
 var colors =["red","blue","yellow","grean","purple","pink"];
 
-var coins =["coin1","coin5","coin10","coin50","coin100","coin500"];
+var balls =["red","blue","green","yellow","purple","pink"];
 var length = 3; //3-6
 var row=5; //max:12
 var col=5; //max:19
@@ -42,12 +42,12 @@ var totaldelete = 0;
 
 var ASSETS = {
   image: {
-    'coin1': 'img/money_coin_heisei_1.png',
-    'coin5': 'img/money_coin_blank_5.png',
-    'coin10': 'img/money_coin_heisei_10.png',
-    'coin50': 'img/money_coin_heisei_50.png',
-    'coin100': 'img/money_coin_heisei_100.png',
-    'coin500': 'img/money_coin_reiwa_500_new.png',
+    'red': 'img/1.png',
+    'blue': 'img/2.png',
+    'green': 'img/3.png',
+    'yellow': 'img/4.png',
+    'purple': 'img/5.png',
+    'pink': 'img/6.png',
   },
   sound: {
 
@@ -155,20 +155,21 @@ phina.define('Main', {
 
         var id= Math.floor(Math.random()*(length));
         ar[j][i] = id;
-        //var sprite = Sprite(coins[id]).setScale(0.1).addChildTo(group);
-        //sprites[j][i]=sprite;
-        //sprite.x = offset_x + i*coin_size;
-        //sprite.y = SCREEN_HEIGHT-offset_y - j*coin_size;
 
-        var circle = CircleShape({
+        var sprite = Sprite(balls[id]).setScale(0.1).addChildTo(group);
+        sprites[j][i]=sprite;
+        sprite.x = offset_x + i*coin_size;
+        sprite.y = SCREEN_HEIGHT-offset_y - j*coin_size;
+        sprites[j][i] = sprite;
+
+        /*var circle = CircleShape({
           stroke: "white",
           fill: colors[id],
           radius: 20,
           x : offset_x + i*coin_size,
           y : SCREEN_HEIGHT-offset_y - j*coin_size,
         }).addChildTo(group);
-
-        sprites[j][i]=circle;
+        sprites[j][i]=circle;*/
 
       }
     }
@@ -192,9 +193,6 @@ phina.define('Main', {
       var label1 = Label({x:320,y:480,fontSize:50,fill:'white',stroke:"black",strokeWidth:3,text:""}).addChildTo(this);
 
       matchcheck();
-
-
-
 
       function matchcheck(){
         var flag_h = false;
@@ -405,11 +403,12 @@ phina.define('Main', {
           for(i=0;i<row;i++){
             var id= Math.floor(Math.random()*(length));
             ar2[j][i] = id;
-            /*var sprite = Sprite(coins[id]).setScale(0.1).setPosition(offset_x + i*coin_size,(SCREEN_HEIGHT-offset_y-col*coin_size)-j*coin_size).addChildTo(group2);
-            sprite.alpha=0;
-            sprites2[j][i]=sprite;*/
 
-            var circle = CircleShape({
+            var sprite = Sprite(balls[id]).setScale(0.1).setPosition(offset_x + i*coin_size,(SCREEN_HEIGHT-offset_y-col*coin_size)-j*coin_size).addChildTo(group2);
+            sprite.alpha=0;
+            sprites2[j][i]=sprite;
+
+            /*var circle = CircleShape({
               stroke: "white",
               fill: colors[id],
               radius: 20,
@@ -417,8 +416,8 @@ phina.define('Main', {
               y: (SCREEN_HEIGHT-offset_y-col*coin_size)-j*coin_size,
             }).addChildTo(group2);
             circle.alpha=0;
+            sprites2[j][i]=circle;*/
 
-            sprites2[j][i]=circle;
 
             //盤面内だったら表示
             group2.update=function(){
@@ -498,11 +497,12 @@ phina.define('Main', {
 
           //sprite 更新
           var id = ar[y][x];
-
-          //var sprite = Sprite(coins[id]).setScale(0.1).setPosition(offset_x+x*coin_size, SCREEN_HEIGHT-offset_y-y*coin_size).addChildTo(group);
-          //sprites[y][x] = sprite;
-          //sprites2[y][x].remove();
           sprites[y][x].remove();
+          sprites[y][x] = Sprite(balls[id]).setScale(0.1).setPosition(offset_x+x*coin_size, SCREEN_HEIGHT-offset_y-y*coin_size).addChildTo(group);
+          sprites2[y][x].remove();
+
+
+          /*sprites[y][x].remove();
           sprites2[y][x].remove();
           var circle = CircleShape({
             stroke: "white",
@@ -511,8 +511,7 @@ phina.define('Main', {
             x : offset_x + x*coin_size,
             y : SCREEN_HEIGHT-offset_y - y*coin_size,
           }).addChildTo(group);
-
-          sprites[y][x] = circle;
+          sprites[y][x] = circle;*/
 
 
         }
