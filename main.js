@@ -7,9 +7,9 @@ var SCREEN_HEIGHT = 960;
 var colors =["red","blue","yellow","grean","purple","pink"];
 
 var balls =["red","blue","green","yellow","purple","pink"];
-var length = 3; //3-6
-var row=5; //max:12
-var col=5; //max:19
+var length = 4; //3-6
+var row=10; //max:12
+var col=10; //max:19
 
 var offset_x =25;
 var offset_y = 25;
@@ -52,7 +52,7 @@ var ASSETS = {
   sound: {
 
     'delete': 'sound/button43.mp3',
-
+    'finish': 'sound/バーン.mp3',
   },
 };
 
@@ -190,7 +190,7 @@ phina.define('Main', {
       var group = DisplayElement().addChildTo(this);
       var group2 = DisplayElement().addChildTo(this);
       var label = Label({x:500,y:100,fontSize:32,fill:'white',text:totalcombo}).addChildTo(this);
-      var label1 = Label({x:320,y:480,fontSize:50,fill:'white',stroke:"black",strokeWidth:3,text:""}).addChildTo(this);
+      var label1 = Label({x:320,y:200,fontSize:50,fill:'white',stroke:"black",strokeWidth:3,text:""}).addChildTo(this);
 
       matchcheck();
 
@@ -247,6 +247,7 @@ phina.define('Main', {
         else{
           console.log("終了");
           label1.text=totalcombo+"コンボ";
+          SoundManager.play("finish");
           finished=true;
         }
       }
