@@ -7,8 +7,8 @@ var SCREEN_HEIGHT = 960;
 
 var coins =["coin1","coin5","coin10","coin50","coin100","coin500"];
 
-var row=10;
-var col=10;
+var row=4;
+var col=4;
 var ar=[];
 var ar2=[];
 var sprites=[];
@@ -24,7 +24,9 @@ var visited=[];
 var target=[];
 
 var combo=0;
-var countup=0;
+var countup=0; //落下ごとのコンボ数
+var totalcombo = 0;
+var totaldelete = 0;
 
 var ASSETS = {
   image: {
@@ -76,10 +78,12 @@ phina.define('Main', {
     }).addChildTo(this);
 
 
-
-
     // 背景色を指定
     this.backgroundColor = '#444';
+
+    var group = DisplayElement().addChildTo(this);
+    var group2 = DisplayElement().addChildTo(this);
+
 
     makearray();
 
@@ -140,7 +144,8 @@ phina.define('Main', {
       }
     }
 
-    var group = DisplayElement().addChildTo(this);
+
+
     var self=this;
     //表示
     for(j=0;j<col;j++){
@@ -158,14 +163,20 @@ phina.define('Main', {
     }
     //console.log(ar);
 
+
+
   },
 
   onpointstart: function() {
 
     var group = DisplayElement().addChildTo(this);
-    var label = Label({x:500,y:100,fontSize:32,fill:'white',text:countup}).addChildTo(this);
+    var group2 = DisplayElement().addChildTo(this);
+    var label = Label({x:500,y:100,fontSize:32,fill:'white',text:totalcombo}).addChildTo(this);
+    var label1 = Label({x:320,y:480,fontSize:50,fill:'white',stroke:"black",strokeWidth:3,text:""}).addChildTo(this);
 
     matchcheck();
+
+
 
 
     function matchcheck(){
@@ -217,6 +228,10 @@ phina.define('Main', {
       }
       if(flag_h || flag_v ==1){
         connectcheck();
+      }
+      else{
+        console.log("終了");
+        label1.text=totalcombo+"コンボ";
       }
     }
 
@@ -343,7 +358,7 @@ phina.define('Main', {
             countup++;
             console.log(countup);
             SoundManager.play("delete");
-            label.text=countup;
+            label.text=++totalcombo;
             sprites[posy][posx].tweener.fadeOut(500)
             .call(function() {
               this.remove();
@@ -372,11 +387,23 @@ phina.define('Main', {
         for(i=0;i<row;i++){
           var id= Math.floor(Math.random()*(coins.length-3));
           ar2[j][i] = id;
-          var sprite = Sprite(coins[id]).setScale(0.1).setPosition(100+i*50,(910-col*50)-j*50).addChildTo(group);
-          sprite.alpha=0.5;
+          var sprite = Sprite(coins[id]).setScale(0.1).setPosition(100+i*50,(910-col*50)-j*50).addChildTo(group2);
+          sprite.alpha=0;
           sprites2[j][i]=sprite;
+
+          group2.update=function(){
+              for(var c=0; c<group2.children.length; c++){
+                if(group2.children[c].y>910-col*50){
+                  console.log("shita");
+                  group2.children[c].alpha=1;
+                }
+            }
+          }
+
         }
       }
+
+
 
       var sprite_moving=0; //移動未完了Sprite数
       for(x=0; x<row; x++){
@@ -405,7 +432,7 @@ phina.define('Main', {
       //空の数だけid2とspeite2からもってくる
       for(s=0; s<space; s++){
         ar[col-space+s][x]=ar2[s][x];
-        console.log(col-space+s+","+x +" <- "+ s +","+x + " ("+ ar2[s][x] +")");
+        //console.log(col-space+s+","+x +" <- "+ s +","+x + " ("+ ar2[s][x] +")");
         sprite_moving++;
         sprites2[s][x].tweener.moveBy(0, space*50, 500)
         .call(function() {
@@ -428,6 +455,7 @@ phina.define('Main', {
     var queue=[];
     var target=[];
     combo=0;
+    countup=0;
 
     //del　リセット
     //visited　リセット
@@ -441,13 +469,14 @@ phina.define('Main', {
 
         //sprite 更新
         var id = ar[y][x];
+        sprites[y][x].remove();
         var sprite = Sprite(coins[id]).setScale(0.1).setPosition(100+x*50,910-y*50).addChildTo(group);
         sprites[y][x] = sprite;
         sprites2[y][x].remove();
       }
     }
     console.log("repeat");
-                //matchcheck();
+    matchcheck();
   }
 
 
