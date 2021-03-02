@@ -416,7 +416,7 @@ phina.define('Main', {
               x : offset_x + i*coin_size,
               y: (SCREEN_HEIGHT-offset_y-col*coin_size)-j*coin_size,
             }).addChildTo(group2);
-            circle.alpha=0.5;
+            circle.alpha=0;
 
             sprites2[j][i]=circle;
 
@@ -502,8 +502,8 @@ phina.define('Main', {
           //var sprite = Sprite(coins[id]).setScale(0.1).setPosition(offset_x+x*coin_size, SCREEN_HEIGHT-offset_y-y*coin_size).addChildTo(group);
           //sprites[y][x] = sprite;
           //sprites2[y][x].remove();
-
-
+          sprites[y][x].remove();
+          sprites2[y][x].remove();
           var circle = CircleShape({
             stroke: "white",
             fill: colors[id],
@@ -512,11 +512,7 @@ phina.define('Main', {
             y : SCREEN_HEIGHT-offset_y - y*coin_size,
           }).addChildTo(group);
 
-
-          sprites[y][x].remove();
           sprites[y][x] = circle;
-
-          sprites2[y][x].remove();
 
 
         }
