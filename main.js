@@ -4,17 +4,19 @@ phina.globalize();
 var SCREEN_WIDTH = 640;
 var SCREEN_HEIGHT = 960;
 
+var colors =["red","blue","yellow","grean","purple","pink"];
+
 var coins =["coin1","coin5","coin10","coin50","coin100","coin500"];
-var length = 3;
-var row=10; //max:12
-var col=10; //max:19
+var length = 3; //3-6
+var row=5; //max:12
+var col=5; //max:19
 
 var offset_x =25;
 var offset_y = 25;
-var coin_size = 45; //50
+var coin_size = 50; //50
 
 //アニメーション速度
-var erase = 300; //500
+var erase = 700; //700
 var drop = 500; //500-750くらい
 
 var ar=[];
@@ -54,21 +56,6 @@ var ASSETS = {
   },
 };
 
-var ASSETS_AFTER = {
-  image: {
-    'coin1': 'img/money_coin_heisei_1.png',
-    'coin5': 'img/money_coin_blank_5.png',
-    'coin10': 'img/money_coin_heisei_10.png',
-    'coin50': 'img/money_coin_heisei_50.png',
-    'coin100': 'img/money_coin_heisei_100.png',
-    'coin500': 'img/money_coin_reiwa_500_new.png',
-  },
-  sound: {
-
-    'delete': 'sound/button43.mp3',
-
-  },
-};
 
 // MainScene クラスを定義
 phina.define('Main', {
@@ -91,8 +78,9 @@ phina.define('Main', {
     // 背景色を指定
     this.backgroundColor = '#444';
 
+    var bg = DisplayElement().addChildTo(this);
     var group = DisplayElement().addChildTo(this);
-    var group2 = DisplayElement().addChildTo(this);
+
 
 
     makearray();
@@ -101,56 +89,56 @@ phina.define('Main', {
       // ar[y][x] の2次元配列を作成する
       ar = new Array(col);
       for (y=0; y<ar.length; y++){
-        ar[y] = new Array(row).fill(0);;
+        ar[y] = new Array(row).fill(0);
       }
 
       // ar[y][x] の2次元配列を作成する
       sprites = new Array(col);
       for (y=0; y<ar.length; y++){
-        sprites[y] = new Array(row).fill(0);;
+        sprites[y] = new Array(row).fill(0);
       }
 
       // ar2[y][x] の2次元配列を作成する
       ar2 = new Array(col);
       for (y=0; y<ar.length; y++){
-        ar2[y] = new Array(row).fill(0);;
+        ar2[y] = new Array(row).fill(0);
       }
 
       // sprite[y][x] の2次元配列を作成する
       sprites2 = new Array(col);
       for (y=0; y<ar.length; y++){
-        sprites2[y] = new Array(row).fill(0);;
+        sprites2[y] = new Array(row).fill(0);
       }
 
       // チェック用配列作成　縦
       check_v = new Array(col);
       for (y=0; y<ar.length; y++){
-        check_v[y] = new Array(row).fill(0);;
+        check_v[y] = new Array(row).fill(0);
       }
 
       // チェック用配列作成　横
       check_h = new Array(col);
       for (y=0; y<ar.length; y++){
-        check_h[y] = new Array(row).fill(0);;
+        check_h[y] = new Array(row).fill(0);
       }
 
       // 配列作成　縦横
       check = new Array(col);
       for (y=0; y<ar.length; y++){
-        check[y] = new Array(row).fill(0);;
+        check[y] = new Array(row).fill(0);
       }
 
 
       // 配列作成　コンボ
       del = new Array(col);
       for (y=0; y<ar.length; y++){
-        del[y] = new Array(row).fill(0);;
+        del[y] = new Array(row).fill(0);
       }
 
       // 配列作成　コンボ
       visied = new Array(col);
       for (y=0; y<ar.length; y++){
-        visited[y] = new Array(row).fill(0);;
+        visited[y] = new Array(row).fill(0);
       }
     }
 
@@ -160,14 +148,27 @@ phina.define('Main', {
     //表示
     for(j=0;j<col;j++){
       for(i=0;i<row;i++){
+
+        var shape = Shape().setPosition(offset_x + i*coin_size,SCREEN_HEIGHT-offset_y - j*coin_size).setSize(33,33).addChildTo(bg);
+        if((i+j)%2==0){shape.backgroundColor = 'SaddleBrown';}
+        else{shape.backgroundColor = 'Chocolate';}
+
         var id= Math.floor(Math.random()*(length));
         ar[j][i] = id;
-        var sprite = Sprite(coins[id]).setScale(0.1).addChildTo(group);
-        sprites[j][i]=sprite;
-        sprite.x = offset_x + i*coin_size;
-        sprite.y = SCREEN_HEIGHT-offset_y - j*coin_size;
-        //sprite.y=480+j*50;
-        //sprite.y=860-j*50;
+        //var sprite = Sprite(coins[id]).setScale(0.1).addChildTo(group);
+        //sprites[j][i]=sprite;
+        //sprite.x = offset_x + i*coin_size;
+        //sprite.y = SCREEN_HEIGHT-offset_y - j*coin_size;
+
+        var circle = CircleShape({
+          stroke: "white",
+          fill: colors[id],
+          radius: 20,
+          x : offset_x + i*coin_size,
+          y : SCREEN_HEIGHT-offset_y - j*coin_size,
+        }).addChildTo(group);
+
+        sprites[j][i]=circle;
 
       }
     }
@@ -378,7 +379,7 @@ phina.define('Main', {
               label.text=++totalcombo;
               sprites[posy][posx].tweener.fadeOut(erase)
               .call(function() {
-                this.remove();
+                //this.remove();
                 if(countup==combo){fall();}
                 else{animation();}
               })
@@ -389,7 +390,7 @@ phina.define('Main', {
               //フェードアウト
               sprites[posy][posx].tweener.fadeOut(erase)
               .call(function() {
-                this.remove();
+                //this.remove();
               })
               .play();
             }
@@ -404,10 +405,22 @@ phina.define('Main', {
           for(i=0;i<row;i++){
             var id= Math.floor(Math.random()*(length));
             ar2[j][i] = id;
-            var sprite = Sprite(coins[id]).setScale(0.1).setPosition(offset_x + i*coin_size,(SCREEN_HEIGHT-offset_y-col*coin_size)-j*coin_size).addChildTo(group2);
+            /*var sprite = Sprite(coins[id]).setScale(0.1).setPosition(offset_x + i*coin_size,(SCREEN_HEIGHT-offset_y-col*coin_size)-j*coin_size).addChildTo(group2);
             sprite.alpha=0;
-            sprites2[j][i]=sprite;
+            sprites2[j][i]=sprite;*/
 
+            var circle = CircleShape({
+              stroke: "white",
+              fill: colors[id],
+              radius: 20,
+              x : offset_x + i*coin_size,
+              y: (SCREEN_HEIGHT-offset_y-col*coin_size)-j*coin_size,
+            }).addChildTo(group2);
+            circle.alpha=0.5;
+
+            sprites2[j][i]=circle;
+
+            //盤面内だったら表示
             group2.update=function(){
               for(var c=0; c<group2.children.length; c++){
                 if(group2.children[c].y>SCREEN_HEIGHT-offset_y-col*coin_size){
@@ -485,10 +498,27 @@ phina.define('Main', {
 
           //sprite 更新
           var id = ar[y][x];
+
+          //var sprite = Sprite(coins[id]).setScale(0.1).setPosition(offset_x+x*coin_size, SCREEN_HEIGHT-offset_y-y*coin_size).addChildTo(group);
+          //sprites[y][x] = sprite;
+          //sprites2[y][x].remove();
+
+
+          var circle = CircleShape({
+            stroke: "white",
+            fill: colors[id],
+            radius: 20,
+            x : offset_x + x*coin_size,
+            y : SCREEN_HEIGHT-offset_y - y*coin_size,
+          }).addChildTo(group);
+
+
           sprites[y][x].remove();
-          var sprite = Sprite(coins[id]).setScale(0.1).setPosition(offset_x+x*coin_size, SCREEN_HEIGHT-offset_y-y*coin_size).addChildTo(group);
-          sprites[y][x] = sprite;
+          sprites[y][x] = circle;
+
           sprites2[y][x].remove();
+
+
         }
       }
       //console.log("repeat");
