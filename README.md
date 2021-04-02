@@ -1,2 +1,2 @@
 # Puzzle
-https://github.com/YOPPYY/Puzzle/blob/main/main.js
+https://yoppyy.github.io/Puzzle/
