@@ -7,13 +7,14 @@ var SCREEN_HEIGHT = 960;
 var colors =["red","blue","yellow","grean","purple","pink"];
 
 var balls =["red","blue","green","yellow","purple","pink"];
-var length = 4; //3-6
+var length = 6; //3-6
 var row=10; //max:12
-var col=10; //max:19
+var col=14; //max:19
+var set=[];
 
-var offset_x =25;
-var offset_y = 25;
-var coin_size = 50; //50
+var offset_x =32;
+var offset_y = 32;
+var coin_size = 64; //50
 
 //アニメーション速度
 var erase = 700; //700
@@ -56,6 +57,45 @@ var ASSETS = {
   },
 };
 
+phina.define('Title', {
+  superClass: 'CanvasScene',
+  init: function() {
+    this.superInit();
+    var self=this;
+    // 背景色を指定
+    this.backgroundColor = '#444';
+    if(length)length= parseInt(localStorage.getItem('length'),10);
+
+    Label({x:320,y:180,fontSize:50,text:'レベル',fill:'white'}).addChildTo(this);
+    var num=Label({x:320,y:480,text:length,fontSize:64,fill:'white'}).addChildTo(this);
+
+    var button1=Button({x:160,y:480,width:100,height:100,fontSize:50,text:'-',fill:'white',fontColor:'black'}).addChildTo(this);
+    button1.onpointstart=function(){length= Math.max(3,length-1); num.text=length;Ball()}
+
+    var button2= Button({x:480,y:480,width:100,height:100,fontSize:50,text:'+',fill:'white',fontColor:'black'}).addChildTo(this);
+    button2.onpointstart=function(){length= Math.min(6,length+1); num.text=length;Ball()}
+
+    Ball()
+    function Ball(){
+      for(var i=0; i<length; i++){
+      if(set[i]){set[i].remove();}
+      set[i] = Sprite(balls[i],502,502).setSize(64,64).addChildTo(self);
+      set[i].setPosition(120+i*(400/(length-1)),640);
+    }
+    }
+    var start = Button({x:320,y:860,text:'START'}).addChildTo(this);
+    start.onpointstart=function(){
+
+      localStorage.setItem('length',length);
+      self.exit('main');
+    }
+
+
+
+
+  },
+});
+
 
 // MainScene クラスを定義
 phina.define('Main', {
@@ -68,7 +108,7 @@ phina.define('Main', {
       text:'タイトル',
       fontSize: 48,
       x:this.gridX.center(),
-      y:100,
+      y:32,
       fill:'white',
       stroke:'blue',
       strokeWidth:5,
@@ -149,14 +189,16 @@ phina.define('Main', {
     for(j=0;j<col;j++){
       for(i=0;i<row;i++){
 
-        var shape = Shape().setPosition(offset_x + i*coin_size,SCREEN_HEIGHT-offset_y - j*coin_size).setSize(33,33).addChildTo(bg);
+        var shape = Shape()
+        .setSize(coin_size-16,coin_size-16)
+        .setPosition(offset_x + i*coin_size,SCREEN_HEIGHT-offset_y - j*coin_size).addChildTo(bg);
         if((i+j)%2==0){shape.backgroundColor = 'SaddleBrown';}
         else{shape.backgroundColor = 'Chocolate';}
 
         var id= Math.floor(Math.random()*(length));
         ar[j][i] = id;
 
-        var sprite = Sprite(balls[id]).setScale(0.1).addChildTo(group);
+        var sprite = Sprite(balls[id],502,502).setSize(62,62).addChildTo(group);
         sprites[j][i]=sprite;
         sprite.x = offset_x + i*coin_size;
         sprite.y = SCREEN_HEIGHT-offset_y - j*coin_size;
@@ -184,13 +226,13 @@ phina.define('Main', {
     if(clicked==true && finished== true){
       location.reload();
     }
-    else{
+    else if(clicked!=true){
       clicked=true;
 
       var group = DisplayElement().addChildTo(this);
       var group2 = DisplayElement().addChildTo(this);
-      var label = Label({x:500,y:100,fontSize:32,fill:'white',text:totalcombo}).addChildTo(this);
-      var label1 = Label({x:320,y:200,fontSize:50,fill:'white',stroke:"black",strokeWidth:3,text:""}).addChildTo(this);
+      var label = Label({x:500,y:32,fontSize:32,fill:'white',text:totalcombo}).addChildTo(this);
+      var labeldel = Label({x:100,y:32,fontSize:32,fill:'white',text:"00"}).addChildTo(this);
 
       matchcheck();
 
@@ -246,7 +288,14 @@ phina.define('Main', {
         }
         else{
           console.log("終了");
+          var shape = Shape().setSize(640,200).setPosition(320,480).addChildTo(group);
+          shape.backgroundColor = 'white';
+          shape.alpha=0.75;
+          var label1 = Label({x:320,y:480-32,fontSize:64,fill:'brown',text:""}).addChildTo(group);
           label1.text=totalcombo+"コンボ";
+          var label2 = Label({x:320,y:480+32,fontSize:64,fill:'brown',text:""}).addChildTo(group);
+          var score = totalcombo * totaldelete;
+          label2.text="SCORE:"+score;
           SoundManager.play("finish");
           finished=true;
         }
@@ -348,6 +397,8 @@ phina.define('Main', {
               if(del[y][x] ==i){
                 var object={y:y, x:x};
                 temp.push(object);
+
+                //console.log(totaldelete)
               }
             }
           }
@@ -365,7 +416,8 @@ phina.define('Main', {
 
           var temp = target.shift();
           while(temp.length>0){
-
+            totaldelete++;
+            labeldel.text=totaldelete;
             var element = temp.shift();
             var posx= element.x;
             var posy= element.y;
@@ -379,6 +431,7 @@ phina.define('Main', {
               sprites[posy][posx].tweener.fadeOut(erase)
               .call(function() {
                 //this.remove();
+
                 if(countup==combo){fall();}
                 else{animation();}
               })
@@ -405,7 +458,7 @@ phina.define('Main', {
             var id= Math.floor(Math.random()*(length));
             ar2[j][i] = id;
 
-            var sprite = Sprite(balls[id]).setScale(0.1).setPosition(offset_x + i*coin_size,(SCREEN_HEIGHT-offset_y-col*coin_size)-j*coin_size).addChildTo(group2);
+            var sprite = Sprite(balls[id],502,502).setSize(coin_size-2,coin_size-2).setPosition(offset_x + i*coin_size,(SCREEN_HEIGHT-offset_y-col*coin_size)-j*coin_size).addChildTo(group2);
             sprite.alpha=0;
             sprites2[j][i]=sprite;
 
@@ -446,7 +499,7 @@ phina.define('Main', {
             else{
               //Spaceぶん下に移動
               ar[y-space][x] = ar[y][x];
-              sprites[y][x].tweener.moveBy(0, space*50, drop).play();
+              sprites[y][x].tweener.moveBy(0, space*64, drop).wait(50).play();
             }
 
           }
@@ -463,7 +516,7 @@ phina.define('Main', {
           ar[col-space+s][x]=ar2[s][x];
           //console.log(col-space+s+","+x +" <- "+ s +","+x + " ("+ ar2[s][x] +")");
           sprite_moving++;
-          sprites2[s][x].tweener.moveBy(0, space*50, drop)
+          sprites2[s][x].tweener.moveBy(0, space*64, drop).wait(50)
           .call(function() {
             sprite_moving--;
 
@@ -499,7 +552,7 @@ phina.define('Main', {
           //sprite 更新
           var id = ar[y][x];
           sprites[y][x].remove();
-          sprites[y][x] = Sprite(balls[id]).setScale(0.1).setPosition(offset_x+x*coin_size, SCREEN_HEIGHT-offset_y-y*coin_size).addChildTo(group);
+          sprites[y][x] = Sprite(balls[id]).setSize(62,62).setPosition(offset_x+x*coin_size, SCREEN_HEIGHT-offset_y-y*coin_size).addChildTo(group);
           sprites2[y][x].remove();
 
 
@@ -559,10 +612,15 @@ phina.main(function() {
   var app = GameApp({
     query: '#canvas',
     // Scene01 から開始
-    startLabel: 'main',
+    startLabel: 'title',
     assets: ASSETS,
     // シーンのリストを引数で渡す
     scenes: [
+      {
+        className: 'Title',
+        label: 'title',
+        nextLabel: 'main',
+      },
       {
         className: 'Main',
         label: 'main',
