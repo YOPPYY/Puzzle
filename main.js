@@ -11,13 +11,14 @@ var length = 6; //3-6
 var row=10; //max:12
 var col=14; //max:19
 var set=[];
+var wait=200;
 
 var offset_x =32;
 var offset_y = 32;
 var coin_size = 64; //50
 
 //アニメーション速度
-var erase = 700; //700
+var erase = 500; //700
 var drop = 500; //500-750くらい
 
 var ar=[];
@@ -35,6 +36,8 @@ var finished = false;
 var queue=[];
 var visited=[];
 var target=[];
+
+var label0;
 
 var combo=0;
 var countup=0; //落下ごとのコンボ数
@@ -64,7 +67,9 @@ phina.define('Title', {
     var self=this;
     // 背景色を指定
     this.backgroundColor = '#444';
-    if(length)length= parseInt(localStorage.getItem('length'),10);
+
+    length= parseInt(localStorage.getItem('Puzzle_length'),10);
+    if(!length){length=5;}
 
     Label({x:320,y:180,fontSize:50,text:'レベル',fill:'white'}).addChildTo(this);
     var num=Label({x:320,y:480,text:length,fontSize:64,fill:'white'}).addChildTo(this);
@@ -77,16 +82,16 @@ phina.define('Title', {
 
     Ball()
     function Ball(){
+      for(var a=0; a<6; a++){if(set[a])set[a].remove();}
       for(var i=0; i<length; i++){
-      if(set[i]){set[i].remove();}
-      set[i] = Sprite(balls[i],502,502).setSize(64,64).addChildTo(self);
-      set[i].setPosition(120+i*(400/(length-1)),640);
-    }
+        set[i] = Sprite(balls[i],502,502).setSize(64,64).addChildTo(self);
+        set[i].setPosition(320+96*i-(96*(length-1)/2),640);
+      }
     }
     var start = Button({x:320,y:860,text:'START'}).addChildTo(this);
     start.onpointstart=function(){
 
-      localStorage.setItem('length',length);
+      localStorage.setItem('Puzzle_length',length);
       self.exit('main');
     }
 
@@ -104,8 +109,8 @@ phina.define('Main', {
     this.superInit();
     var self=this;
 
-    var label0 = Label({
-      text:'タイトル',
+    label0 = Label({
+      text:'画面タップで開始',
       fontSize: 48,
       x:this.gridX.center(),
       y:32,
@@ -120,8 +125,6 @@ phina.define('Main', {
 
     var bg = DisplayElement().addChildTo(this);
     var group = DisplayElement().addChildTo(this);
-
-
 
     makearray();
 
@@ -205,375 +208,396 @@ phina.define('Main', {
         sprites[j][i] = sprite;
 
         /*var circle = CircleShape({
+        stroke: "white",
+        fill: colors[id],
+        radius: 20,
+        x : offset_x + i*coin_size,
+        y : SCREEN_HEIGHT-offset_y - j*coin_size,
+      }).addChildTo(group);
+      sprites[j][i]=circle;*/
+
+    }
+  }
+  //console.log(ar);
+
+
+
+},
+
+onpointstart: function() {
+  label0.remove();
+  if(clicked==true && finished== true){
+    location.reload();
+  }
+  else if(clicked!=true){
+    clicked=true;
+
+    var group = DisplayElement().addChildTo(this);
+    var group2 = DisplayElement().addChildTo(this);
+    var label = Label({x:32,y:32,fontSize:32,align:'left',fill:'white',text:''}).addChildTo(this);
+    var labeldel = Label({x:320-32,y:32,fontSize:32,fill:'white',text:''}).addChildTo(this);
+    var labelscore = Label({x:640-32,y:32,fontSize:32,align:'right',fill:'white',text:''}).addChildTo(this);
+
+    matchcheck();
+
+    function matchcheck(){
+      var flag_h = false;
+      var flag_v = false;
+
+      //探索　横
+      for(var y=0;y<col; y++){
+        for(var x=0;x<row-2; x++){
+          var temp = ar[y][x];
+          if(temp == ar[y][x+1] && temp == ar[y][x+2]){
+            //console.log("hit(h) "+ temp);
+            flag_h = true;
+            for(var i=0; i<3; i++){
+              check_h[y][x+i]=temp+1;
+              //console.log(y + "," + x + " + i");
+            }
+          }
+        }
+      }
+
+      //探索　縦
+      for(var x=0;x<row; x++){
+        for(var y=0;y<col-2; y++){
+          var temp = ar[y][x];
+          if(temp == ar[y+1][x] && temp == ar[y+2][x]){
+            //console.log("hit(v) "+ temp);
+            flag_v = true;
+            for(var i=0; i<3; i++){
+              check_v[y+i][x]=temp+1;
+            }
+          }
+        }
+      }
+
+
+      //探索　横　縦　統合
+      for(var y=0;y<col; y++){
+        for(var x=0;x<row; x++){
+
+          if(check_h[y][x] > 0){
+            check[y][x] = check_h[y][x];
+          }
+
+          if(check_v[y][x] > 0){
+            check[y][x] = check_v[y][x];
+          }
+        }
+      }
+      if(flag_h || flag_v ==1){
+        connectcheck();
+      }
+      else{
+        console.log("終了");
+        var shape = Shape().setSize(640,200).setPosition(320,480).addChildTo(group);
+        shape.backgroundColor = 'white';
+        shape.alpha=0.75;
+        var label1 = Label({x:320,y:480-32,fontSize:64,fill:'brown',text:""}).addChildTo(group);
+        label1.text=totalcombo+"コンボ";
+        var label2 = Label({x:320,y:480+32,fontSize:64,fill:'brown',text:""}).addChildTo(group);
+        var score = totalcombo * totaldelete;
+        label2.text="SCORE:"+score;
+        SoundManager.play("finish");
+        HiScore(score)
+        finished=true;
+      }
+    }
+
+    function HiScore(score){
+      var hi= parseInt(localStorage.getItem('Puzzle_Score('+length+')'),10);
+      if(!hi){hi=0;}
+      if(score>hi){
+        console.log('hi');
+        localStorage.setItem('Puzzle_Score('+length+')',score);
+        var shape = Shape().setSize(640,100).setPosition(320,780).addChildTo(group);
+        shape.backgroundColor = 'white';
+        shape.alpha=0.75;
+        var label3 = Label({x:320,y:780,fontSize:64,fill:'red',text:"ハイスコア"}).addChildTo(group);
+      }
+    }
+
+    function connectcheck(){
+      //最後のマスまで調べ終わったら終了。
+      while(visited[col-1][row-1]==0){
+
+        check_loop:
+        for(var y=0; y<col; y++){
+          for(var x=0; x<row; x++){
+            visited[y][x]=1;
+            if(check[y][x] != 0 && del[y][x]==0){
+              if(queue.length==0){
+                var object={y:y, x:x};
+                queue.push(object);
+                combo++;
+                //console.log(object);
+                //console.log(queue);
+                //console.log("対象:"+y+","+x);
+                break check_loop;//visitedの変更を防ぐためループを抜ける。
+              }
+            }
+
+          }
+        }
+
+        //console.log(queue);
+
+        //4. キューの中身が無くなるまで1～3を繰り返す
+        while(queue.length>0){
+          //3. キューからドロップの位置情報を取り出し、対象ドロップとする。
+          var element = queue.shift();
+          var posx= element.x;
+          var posy= element.y;
+
+          // 1. 対象ドロップに現在のカウントを設定する。
+          if(del[posy][posx]==0){
+            del[posy][posx]=combo;
+          }
+
+          // 2. 対象ドロップの上下左右を調べ、コンボ状態かつ同じ色のドロップがあれば、ドロップの位置情報をキューに格納する。
+
+          //上
+          if(posy<col-1){
+            if(check[posy][posx] == check[posy+1][posx] && del[posy+1][posx] == 0){
+              var object={y:posy+1, x:posx};
+              queue.push(object);
+            }
+          }
+
+          //下
+          if(posy>0){
+            if(check[posy][posx] == check[posy-1][posx] && del[posy-1][posx] == 0){
+              var object={y:posy-1, x:posx};
+              queue.push(object);
+            }
+          }
+
+          //左
+          if(posx>0){
+            if(check[posy][posx] == check[posy][posx-1] && del[posy][posx-1] == 0){
+              var object={y:posy, x:posx-1};
+              queue.push(object);
+            }
+          }
+
+          //右
+          if(posx<row-1){
+            if(check[posy][posx] == check[posy][posx+1] && del[posy][posx+1] == 0){
+              var object={y:posy, x:posx+1};
+              queue.push(object);
+            }
+          }
+        }
+
+        //中身が無くなったら、カウントアップ（+1）して次のドロップの調査へ移る。
+
+      }
+      //探索完了
+      //console.log("終了");
+      //console.log(del);
+      //console.log(combo);
+
+
+      comboset();
+    }
+
+    function comboset(){
+
+      //削除キュー作成　ここから
+      for(var i=1; i<=combo; i++){
+        var temp=[];
+
+        //検索してキューに追加
+        for(var y=0; y<col; y++){
+          for(var x=0; x<row; x++){
+            if(del[y][x] ==i){
+              var object={y:y, x:x};
+              temp.push(object);
+
+              //console.log(totaldelete)
+            }
+          }
+        }
+        target.push(temp);      //コンボ順にならべる
+      }
+      //ここまで
+      //console.log(queue);
+      animation();
+    }
+    function animation(){
+      //if(target.length==0){console.log("0combo");}
+      //console.log(target)
+      if(target.length>0){
+
+
+        var temp = target.shift();
+        while(temp.length>0){
+          totaldelete++;
+
+          var element = temp.shift();
+          var posx= element.x;
+          var posy= element.y;
+          ar[posy][posx]=-1;
+
+          if(temp.length==0){
+            countup++;
+            console.log(countup);
+            SoundManager.play("delete");
+            totalcombo++
+            label.text='コンボ '+totalcombo;
+            labeldel.text='消去 '+totaldelete;
+            labelscore.text='スコア '+(totalcombo * totaldelete);
+            sprites[posy][posx].tweener.fadeOut(erase).wait(wait)
+            .call(function() {
+              //this.remove();
+
+              if(countup==combo){fall();}
+              else{animation();}
+            })
+            .play();
+          }
+
+          else{
+            //フェードアウト
+            sprites[posy][posx].tweener.fadeOut(erase).wait(wait)
+            .call(function() {
+              //this.remove();
+            })
+            .play();
+          }
+        }
+      }
+    }
+    function fall(){
+      //console.log("位置変更");
+
+      //表示
+      for(j=0;j<col;j++){
+        for(i=0;i<row;i++){
+          var id= Math.floor(Math.random()*(length));
+          ar2[j][i] = id;
+
+          var sprite = Sprite(balls[id],502,502)
+          .setSize(coin_size-2,coin_size-2)
+          .setPosition(offset_x + i*coin_size,(SCREEN_HEIGHT-offset_y-col*coin_size)-j*coin_size)
+          .addChildTo(group2);
+          sprite.alpha=0;
+          sprites2[j][i]=sprite;
+
+          /*var circle = CircleShape({
           stroke: "white",
           fill: colors[id],
           radius: 20,
           x : offset_x + i*coin_size,
-          y : SCREEN_HEIGHT-offset_y - j*coin_size,
-        }).addChildTo(group);
-        sprites[j][i]=circle;*/
+          y: (SCREEN_HEIGHT-offset_y-col*coin_size)-j*coin_size,
+        }).addChildTo(group2);
+        circle.alpha=0;
+        sprites2[j][i]=circle;*/
+
+
+        //盤面内だったら表示
+        group2.update=function(){
+          for(var c=0; c<group2.children.length; c++){
+            if(group2.children[c].y>SCREEN_HEIGHT-offset_y-col*coin_size){
+              group2.children[c].alpha=1;
+            }
+          }
+        }
 
       }
     }
-    //console.log(ar);
 
 
 
-  },
+    var sprite_moving=0; //移動未完了Sprite数
+    for(x=0; x<row; x++){
 
-  onpointstart: function() {
+      var space=0;
+      for(y=0; y<col; y++){
 
-    if(clicked==true && finished== true){
-      location.reload();
-    }
-    else if(clicked!=true){
-      clicked=true;
-
-      var group = DisplayElement().addChildTo(this);
-      var group2 = DisplayElement().addChildTo(this);
-      var label = Label({x:500,y:32,fontSize:32,fill:'white',text:totalcombo}).addChildTo(this);
-      var labeldel = Label({x:100,y:32,fontSize:32,fill:'white',text:"00"}).addChildTo(this);
-
-      matchcheck();
-
-      function matchcheck(){
-        var flag_h = false;
-        var flag_v = false;
-
-        //探索　横
-        for(var y=0;y<col; y++){
-          for(var x=0;x<row-2; x++){
-            var temp = ar[y][x];
-            if(temp == ar[y][x+1] && temp == ar[y][x+2]){
-              //console.log("hit(h) "+ temp);
-              flag_h = true;
-              for(var i=0; i<3; i++){
-                check_h[y][x+i]=temp+1;
-                //console.log(y + "," + x + " + i");
-              }
-            }
-          }
-        }
-
-        //探索　縦
-        for(var x=0;x<row; x++){
-          for(var y=0;y<col-2; y++){
-            var temp = ar[y][x];
-            if(temp == ar[y+1][x] && temp == ar[y+2][x]){
-              //console.log("hit(v) "+ temp);
-              flag_v = true;
-              for(var i=0; i<3; i++){
-                check_v[y+i][x]=temp+1;
-              }
-            }
-          }
-        }
-
-
-        //探索　横　縦　統合
-        for(var y=0;y<col; y++){
-          for(var x=0;x<row; x++){
-
-            if(check_h[y][x] > 0){
-              check[y][x] = check_h[y][x];
-            }
-
-            if(check_v[y][x] > 0){
-              check[y][x] = check_v[y][x];
-            }
-          }
-        }
-        if(flag_h || flag_v ==1){
-          connectcheck();
+        if(ar[y][x]==-1){
+          space++;
         }
         else{
-          console.log("終了");
-          var shape = Shape().setSize(640,200).setPosition(320,480).addChildTo(group);
-          shape.backgroundColor = 'white';
-          shape.alpha=0.75;
-          var label1 = Label({x:320,y:480-32,fontSize:64,fill:'brown',text:""}).addChildTo(group);
-          label1.text=totalcombo+"コンボ";
-          var label2 = Label({x:320,y:480+32,fontSize:64,fill:'brown',text:""}).addChildTo(group);
-          var score = totalcombo * totaldelete;
-          label2.text="SCORE:"+score;
-          SoundManager.play("finish");
-          finished=true;
-        }
-      }
-
-      function connectcheck(){
-        //最後のマスまで調べ終わったら終了。
-        while(visited[col-1][row-1]==0){
-
-          check_loop:
-          for(var y=0; y<col; y++){
-            for(var x=0; x<row; x++){
-              visited[y][x]=1;
-              if(check[y][x] != 0 && del[y][x]==0){
-                if(queue.length==0){
-                  var object={y:y, x:x};
-                  queue.push(object);
-                  combo++;
-                  //console.log(object);
-                  //console.log(queue);
-                  //console.log("対象:"+y+","+x);
-                  break check_loop;//visitedの変更を防ぐためループを抜ける。
-                }
-              }
-
-            }
-          }
-
-          //console.log(queue);
-
-          //4. キューの中身が無くなるまで1～3を繰り返す
-          while(queue.length>0){
-            //3. キューからドロップの位置情報を取り出し、対象ドロップとする。
-            var element = queue.shift();
-            var posx= element.x;
-            var posy= element.y;
-
-            // 1. 対象ドロップに現在のカウントを設定する。
-            if(del[posy][posx]==0){
-              del[posy][posx]=combo;
-            }
-
-            // 2. 対象ドロップの上下左右を調べ、コンボ状態かつ同じ色のドロップがあれば、ドロップの位置情報をキューに格納する。
-
-            //上
-            if(posy<col-1){
-              if(check[posy][posx] == check[posy+1][posx] && del[posy+1][posx] == 0){
-                var object={y:posy+1, x:posx};
-                queue.push(object);
-              }
-            }
-
-            //下
-            if(posy>0){
-              if(check[posy][posx] == check[posy-1][posx] && del[posy-1][posx] == 0){
-                var object={y:posy-1, x:posx};
-                queue.push(object);
-              }
-            }
-
-            //左
-            if(posx>0){
-              if(check[posy][posx] == check[posy][posx-1] && del[posy][posx-1] == 0){
-                var object={y:posy, x:posx-1};
-                queue.push(object);
-              }
-            }
-
-            //右
-            if(posx<row-1){
-              if(check[posy][posx] == check[posy][posx+1] && del[posy][posx+1] == 0){
-                var object={y:posy, x:posx+1};
-                queue.push(object);
-              }
-            }
-          }
-
-          //中身が無くなったら、カウントアップ（+1）して次のドロップの調査へ移る。
-
-        }
-        //探索完了
-        //console.log("終了");
-        //console.log(del);
-        //console.log(combo);
-
-
-        comboset();
-      }
-
-      function comboset(){
-
-        //削除キュー作成　ここから
-        for(var i=1; i<=combo; i++){
-          var temp=[];
-
-          //検索してキューに追加
-          for(var y=0; y<col; y++){
-            for(var x=0; x<row; x++){
-              if(del[y][x] ==i){
-                var object={y:y, x:x};
-                temp.push(object);
-
-                //console.log(totaldelete)
-              }
-            }
-          }
-          target.push(temp);      //コンボ順にならべる
-        }
-        //ここまで
-        //console.log(queue);
-        animation();
-      }
-      function animation(){
-        //if(target.length==0){console.log("0combo");}
-        //console.log(target)
-        if(target.length>0){
-
-
-          var temp = target.shift();
-          while(temp.length>0){
-            totaldelete++;
-            labeldel.text=totaldelete;
-            var element = temp.shift();
-            var posx= element.x;
-            var posy= element.y;
-            ar[posy][posx]=-1;
-
-            if(temp.length==0){
-              countup++;
-              console.log(countup);
-              SoundManager.play("delete");
-              label.text=++totalcombo;
-              sprites[posy][posx].tweener.fadeOut(erase)
-              .call(function() {
-                //this.remove();
-
-                if(countup==combo){fall();}
-                else{animation();}
-              })
-              .play();
-            }
-
-            else{
-              //フェードアウト
-              sprites[posy][posx].tweener.fadeOut(erase)
-              .call(function() {
-                //this.remove();
-              })
-              .play();
-            }
-          }
-        }
-      }
-      function fall(){
-        //console.log("位置変更");
-
-        //表示
-        for(j=0;j<col;j++){
-          for(i=0;i<row;i++){
-            var id= Math.floor(Math.random()*(length));
-            ar2[j][i] = id;
-
-            var sprite = Sprite(balls[id],502,502).setSize(coin_size-2,coin_size-2).setPosition(offset_x + i*coin_size,(SCREEN_HEIGHT-offset_y-col*coin_size)-j*coin_size).addChildTo(group2);
-            sprite.alpha=0;
-            sprites2[j][i]=sprite;
-
-            /*var circle = CircleShape({
-              stroke: "white",
-              fill: colors[id],
-              radius: 20,
-              x : offset_x + i*coin_size,
-              y: (SCREEN_HEIGHT-offset_y-col*coin_size)-j*coin_size,
-            }).addChildTo(group2);
-            circle.alpha=0;
-            sprites2[j][i]=circle;*/
-
-
-            //盤面内だったら表示
-            group2.update=function(){
-              for(var c=0; c<group2.children.length; c++){
-                if(group2.children[c].y>SCREEN_HEIGHT-offset_y-col*coin_size){
-                  group2.children[c].alpha=1;
-                }
-              }
-            }
-
-          }
-        }
-
-
-
-        var sprite_moving=0; //移動未完了Sprite数
-        for(x=0; x<row; x++){
-
-          var space=0;
-          for(y=0; y<col; y++){
-
-            if(ar[y][x]==-1){
-              space++;
-            }
-            else{
-              //Spaceぶん下に移動
-              ar[y-space][x] = ar[y][x];
-              sprites[y][x].tweener.moveBy(0, space*64, drop).wait(50).play();
-            }
-
-          }
-
-          /*
-          //空(-1)にする
-          for(n=0; n<space; n++){
-          ar[col-n-1][x]=-1;
-        }
-        */
-
-        //空の数だけid2とspeite2からもってくる
-        for(s=0; s<space; s++){
-          ar[col-space+s][x]=ar2[s][x];
-          //console.log(col-space+s+","+x +" <- "+ s +","+x + " ("+ ar2[s][x] +")");
-          sprite_moving++;
-          sprites2[s][x].tweener.moveBy(0, space*64, drop).wait(50)
-          .call(function() {
-            sprite_moving--;
-
-            if(sprite_moving==0){
-              //console.log("移動完了　再判定");
-              Reset();
-
-            }
-          })
-          .play();
+          //Spaceぶん下に移動
+          ar[y-space][x] = ar[y][x];
+          sprites[y][x].tweener.moveBy(0, space*64, drop).wait(50).play();
         }
 
       }
+
+      /*
+      //空(-1)にする
+      for(n=0; n<space; n++){
+      ar[col-n-1][x]=-1;
+    }
+    */
+
+    //空の数だけid2とspeite2からもってくる
+    for(s=0; s<space; s++){
+      ar[col-space+s][x]=ar2[s][x];
+      //console.log(col-space+s+","+x +" <- "+ s +","+x + " ("+ ar2[s][x] +")");
+      sprite_moving++;
+      sprites2[s][x].tweener.moveBy(0, space*64, drop).wait(50)
+      .call(function() {
+        sprite_moving--;
+
+        if(sprite_moving==0){
+          //console.log("移動完了　再判定");
+          Reset();
+
+        }
+      })
+      .play();
     }
 
-    function Reset(){
-
-      var queue=[];
-      var target=[];
-      combo=0;
-      countup=0;
-
-      //del　リセット
-      //visited　リセット
-      for(var y=0; y<col; y++){
-        for(var x=0; x<row; x++){
-          check[y][x]=0;
-          check_h[y][x]=0;
-          check_v[y][x]=0;
-          del[y][x]=0;
-          visited[y][x]=0;
-
-          //sprite 更新
-          var id = ar[y][x];
-          sprites[y][x].remove();
-          sprites[y][x] = Sprite(balls[id]).setSize(62,62).setPosition(offset_x+x*coin_size, SCREEN_HEIGHT-offset_y-y*coin_size).addChildTo(group);
-          sprites2[y][x].remove();
-
-
-          /*sprites[y][x].remove();
-          sprites2[y][x].remove();
-          var circle = CircleShape({
-            stroke: "white",
-            fill: colors[id],
-            radius: 20,
-            x : offset_x + x*coin_size,
-            y : SCREEN_HEIGHT-offset_y - y*coin_size,
-          }).addChildTo(group);
-          sprites[y][x] = circle;*/
-
-
-        }
-      }
-      //console.log("repeat");
-      matchcheck();
-    }
   }
+}
+
+function Reset(){
+
+  var queue=[];
+  var target=[];
+  combo=0;
+  countup=0;
+
+  //del　リセット
+  //visited　リセット
+  for(var y=0; y<col; y++){
+    for(var x=0; x<row; x++){
+      check[y][x]=0;
+      check_h[y][x]=0;
+      check_v[y][x]=0;
+      del[y][x]=0;
+      visited[y][x]=0;
+
+      //sprite 更新
+      var id = ar[y][x];
+      sprites[y][x].remove();
+      sprites[y][x] = Sprite(balls[id]).setSize(62,62).setPosition(offset_x+x*coin_size, SCREEN_HEIGHT-offset_y-y*coin_size).addChildTo(group);
+      sprites2[y][x].remove();
+
+
+      /*sprites[y][x].remove();
+      sprites2[y][x].remove();
+      var circle = CircleShape({
+      stroke: "white",
+      fill: colors[id],
+      radius: 20,
+      x : offset_x + x*coin_size,
+      y : SCREEN_HEIGHT-offset_y - y*coin_size,
+    }).addChildTo(group);
+    sprites[y][x] = circle;*/
+
+
+  }
+}
+//console.log("repeat");
+matchcheck();
+}
+}
 
 },
 
