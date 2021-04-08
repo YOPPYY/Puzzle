@@ -96,7 +96,7 @@ phina.define('Title', {
     }
     var start = Button({x:320,y:860,text:'START'}).addChildTo(this);
     start.onpointstart=function(){
-
+      erase = length*100;
       localStorage.setItem('Puzzle_length',length);
       self.exit('main');
     }
