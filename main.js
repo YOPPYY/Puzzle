@@ -71,13 +71,17 @@ phina.define('Title', {
     length= parseInt(localStorage.getItem('Puzzle_length'),10);
     if(!length){length=5;}
 
-    Label({x:320,y:180,fontSize:50,text:'レベル',fill:'white'}).addChildTo(this);
+    Label({text:'落ちコン',fontSize: 64,x:this.gridX.center()-128,y:180,fill:'purple',stroke:'silver',strokeWidth:5,}).addChildTo(this);
+    Label({text:'お祈り杯',fontSize: 64,x:this.gridX.center()+128,y:180,fill:'orange',stroke:'silver',strokeWidth:5,}).addChildTo(this);
+
+
+    Label({x:320,y:360,fontSize:48,text:'レベル',fill:'white'}).addChildTo(this);
     var num=Label({x:320,y:480,text:length,fontSize:64,fill:'white'}).addChildTo(this);
 
-    var button1=Button({x:160,y:480,width:100,height:100,fontSize:50,text:'-',fill:'white',fontColor:'black'}).addChildTo(this);
+    var button1=Button({x:160,y:480,width:100,height:100,fontSize:48,text:'-',fill:'white',fontColor:'black'}).addChildTo(this);
     button1.onpointstart=function(){length= Math.max(3,length-1); num.text=length;Ball()}
 
-    var button2= Button({x:480,y:480,width:100,height:100,fontSize:50,text:'+',fill:'white',fontColor:'black'}).addChildTo(this);
+    var button2= Button({x:480,y:480,width:100,height:100,fontSize:48,text:'+',fill:'white',fontColor:'black'}).addChildTo(this);
     button2.onpointstart=function(){length= Math.min(6,length+1); num.text=length;Ball()}
 
     Ball()
@@ -292,32 +296,31 @@ onpointstart: function() {
       }
       else{
         console.log("終了");
-        var shape = Shape().setSize(640,200).setPosition(320,480).addChildTo(group);
+        var shape = Shape().setSize(640,64*6).setPosition(320,64+64*5).addChildTo(group);
         shape.backgroundColor = 'white';
         shape.alpha=0.75;
-        var label1 = Label({x:320,y:480-32,fontSize:64,fill:'brown',text:""}).addChildTo(group);
+        var label1 = Label({x:320,y:64+64*3,fontSize:64,fill:'brown',text:""}).addChildTo(group);
         label1.text=totalcombo+"コンボ";
-        var label2 = Label({x:320,y:480+32,fontSize:64,fill:'brown',text:""}).addChildTo(group);
+        var label2 = Label({x:320,y:64+64*5,fontSize:64,fill:'brown',text:""}).addChildTo(group);
         var score = totalcombo * totaldelete;
         label2.text="SCORE:"+score;
+        var hi= parseInt(localStorage.getItem('Puzzle_Score('+length+')'),10);
+        if(!hi){hi=0;}
+        var label3 = Label({x:320,y:64+64*7,fontSize:64,fill:'red',text:'Hi : '+hi}).addChildTo(group);
         SoundManager.play("finish");
-        HiScore(score)
+
+
+        if(score>hi){
+          localStorage.setItem('Puzzle_Score('+length+')',score);
+          var shape = Shape().setSize(640,64*2).setPosition(320,64+64*11).addChildTo(group);
+          shape.backgroundColor = 'yellow';
+          shape.alpha=0.75;
+          var label4 = Label({x:320,y:64+64*11,fontSize:64,fill:'red',text:'新記録'}).addChildTo(group);
+        }
         finished=true;
       }
     }
 
-    function HiScore(score){
-      var hi= parseInt(localStorage.getItem('Puzzle_Score('+length+')'),10);
-      if(!hi){hi=0;}
-      if(score>hi){
-        console.log('hi');
-        localStorage.setItem('Puzzle_Score('+length+')',score);
-        var shape = Shape().setSize(640,100).setPosition(320,780).addChildTo(group);
-        shape.backgroundColor = 'white';
-        shape.alpha=0.75;
-        var label3 = Label({x:320,y:780,fontSize:64,fill:'red',text:"ハイスコア"}).addChildTo(group);
-      }
-    }
 
     function connectcheck(){
       //最後のマスまで調べ終わったら終了。
