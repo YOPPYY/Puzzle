@@ -81,10 +81,20 @@ phina.define('Title', {
     var num=Label({x:320,y:480,text:length,fontSize:64,fill:'white'}).addChildTo(this);
 
     var button1=Button({x:160,y:480,width:100,height:100,fontSize:48,text:'-',fill:'white',fontColor:'black'}).addChildTo(this);
-    button1.onpointstart=function(){length= Math.max(3,length-1); num.text=length;Ball()}
+    button1.onpointstart=function(){length= Math.max(3,length-1); num.text=length;Ball(); Score();}
 
     var button2= Button({x:480,y:480,width:100,height:100,fontSize:48,text:'+',fill:'white',fontColor:'black'}).addChildTo(this);
-    button2.onpointstart=function(){length= Math.min(6,length+1); num.text=length;Ball()}
+    button2.onpointstart=function(){length= Math.min(6,length+1); num.text=length;Ball(); Score();}
+
+    var label = Label({x:320,y:720,fontSize:32,text:'',fill:'white'}).addChildTo(self);
+
+
+    Score();
+    function Score(){
+    var hi= parseInt(localStorage.getItem('Puzzle_Score('+length+')'),10);
+    if(!hi){hi=0;}
+    label.text='ハイスコア：'+hi;
+    }
 
     Ball()
     function Ball(){
@@ -306,7 +316,7 @@ onpointstart: function() {
         label1.text=totalcombo+"コンボ";
         var label2 = Label({x:320,y:64+64*5,fontSize:64,fill:'brown',text:""}).addChildTo(group);
         var score = totalcombo * totaldelete;
-        label2.text="SCORE:"+score;
+        label2.text="スコア："+score;
         var hi= parseInt(localStorage.getItem('Puzzle_Score('+length+')'),10);
         if(!hi){hi=0;}
         var label3 = Label({x:320,y:64+64*7,fontSize:64,fill:'red',text:'Hi : '+hi}).addChildTo(group);
