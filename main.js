@@ -4,9 +4,10 @@ phina.globalize();
 var SCREEN_WIDTH = 640;
 var SCREEN_HEIGHT = 960;
 
-var colors =["red","blue","yellow","grean","purple","pink"];
+//var colors =["red","blue","yellow","grean","purple","pink"];
 
-var balls =["red","blue","green","yellow","purple","pink"];
+//var balls =["red","blue","green","yellow","purple","pink"];
+var balls =["yellow","blue","red","pink","orange","green"];
 var length = 6; //3-6
 var row=10; //max:12
 var col=14; //max:19
@@ -48,12 +49,13 @@ var mid;
 
 var ASSETS = {
   image: {
-    'red': 'img/1.png',
+    'red': 'img/3.png',
     'blue': 'img/2.png',
-    'green': 'img/3.png',
-    'yellow': 'img/4.png',
+    'green': 'img/6.png',
+    'yellow': 'img/1.png',
     'purple': 'img/5.png',
-    'pink': 'img/6.png',
+    'orange': 'img/5.png',
+    'pink': 'img/4.png',
   },
   sound: {
 
@@ -212,7 +214,7 @@ phina.define('Main', {
         var shape = Shape()
         .setSize(coin_size-16,coin_size-16)
         .setPosition(offset_x + i*coin_size,SCREEN_HEIGHT-offset_y - j*coin_size).addChildTo(bg);
-        if((i+j)%2==0){shape.backgroundColor = 'SaddleBrown';}
+        if((i+j)%2==0){shape.backgroundColor = 'sienna';}
         else{shape.backgroundColor = 'Chocolate';}
 
         var id= Math.floor(Math.random()*(length));
