@@ -11,14 +11,14 @@ var length = 6; //3-6
 var row=10; //max:12
 var col=14; //max:19
 var set=[];
-var wait=200;
+var wait=100;
 
 var offset_x =32;
 var offset_y = 32;
 var coin_size = 64; //50
 
 //アニメーション速度
-var erase = 500; //700
+var erase = 300; //700
 var drop = 500; //500-750くらい
 
 var ar=[];
@@ -43,6 +43,8 @@ var combo=0;
 var countup=0; //落下ごとのコンボ数
 var totalcombo = 0;
 var totaldelete = 0;
+
+var mid;
 
 var ASSETS = {
   image: {
@@ -128,6 +130,7 @@ phina.define('Main', {
     this.backgroundColor = '#444';
 
     var bg = DisplayElement().addChildTo(this);
+    mid = DisplayElement().addChildTo(this);
     var group = DisplayElement().addChildTo(this);
 
     makearray();
@@ -309,13 +312,20 @@ onpointstart: function() {
         var label3 = Label({x:320,y:64+64*7,fontSize:64,fill:'red',text:'Hi : '+hi}).addChildTo(group);
         SoundManager.play("finish");
 
+        var shape = Shape().setSize(640,64*2).setPosition(320,64+64*11).addChildTo(group);
+        shape.backgroundColor = 'white';
+        shape.alpha=0.75;
+        var label4 = Label({x:320,y:64+64*11,fontSize:64,fill:'black',text:''}).addChildTo(group);
 
         if(score>hi){
           localStorage.setItem('Puzzle_Score('+length+')',score);
-          var shape = Shape().setSize(640,64*2).setPosition(320,64+64*11).addChildTo(group);
+          label4.text='新記録';
+          label4.fill='red';
           shape.backgroundColor = 'yellow';
-          shape.alpha=0.75;
-          var label4 = Label({x:320,y:64+64*11,fontSize:64,fill:'red',text:'新記録'}).addChildTo(group);
+        }
+        else{
+
+          label4.text='TRY AGAIN';
         }
         finished=true;
       }
@@ -444,6 +454,7 @@ onpointstart: function() {
           var posy= element.y;
           ar[posy][posx]=-1;
 
+          //コンボ毎の処理
           if(temp.length==0){
             countup++;
             console.log(countup);
@@ -460,9 +471,12 @@ onpointstart: function() {
               else{animation();}
             })
             .play();
+
           }
 
+          //ドロップ毎の処理
           else{
+
             //フェードアウト
             sprites[posy][posx].tweener.fadeOut(erase).wait(wait)
             .call(function() {
@@ -470,6 +484,17 @@ onpointstart: function() {
             })
             .play();
           }
+
+          var b= RectangleShape({
+            width:64,
+            height:64,
+            x:sprites[posy][posx].x,
+            y:sprites[posy][posx].y,
+            fill:'white',
+            alpha:0.75
+          }).addChildTo(mid);
+          b.tweener.fadeOut(erase).wait(wait).call(function() {this.remove();}).play();
+
         }
       }
     }
