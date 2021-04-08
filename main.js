@@ -313,7 +313,7 @@ onpointstart: function() {
         console.log("終了");
         var shape = Shape().setSize(640,64*6).setPosition(320,64+64*5).addChildTo(group);
         shape.backgroundColor = 'white';
-        shape.alpha=0.75;
+        shape.alpha=0.9;
         var label1 = Label({x:320,y:64+64*3+32,fontSize:64,fill:'brown',text:""}).addChildTo(group);
         label1.text="コンボ："+totalcombo;
         var label2 = Label({x:320,y:64+64*5,fontSize:64,fill:'brown',text:""}).addChildTo(group);
@@ -326,7 +326,7 @@ onpointstart: function() {
 
         var shape = Shape().setSize(640,64*2).setPosition(320,64+64*11).addChildTo(group);
         shape.backgroundColor = 'white';
-        shape.alpha=0.75;
+        shape.alpha=0.9;
         var label4 = Label({x:320,y:64+64*11,fontSize:64,fill:'black',text:''}).addChildTo(group);
 
         if(score>hi){
