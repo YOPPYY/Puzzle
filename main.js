@@ -9,18 +9,19 @@ var SCREEN_HEIGHT = 960;
 //var balls =["red","blue","green","yellow","purple","pink"];
 var balls =["one","two","three","four","five","six","seven","eight","nine"];
 var length = 6; //3-6
-var row=10; //max:12
-var col=14; //max:19
+var row=10; //10
+var col=14; //14
 var set=[];
-var wait=100;
+
 
 var offset_x =32;
 var offset_y = 32;
-var coin_size = 64; //50
+var coin_size = 64;
 
 //アニメーション速度
-var erase = 300; //700
-var drop = 500; //500-750くらい
+var erase = 100; // erase * length (default:100)
+var wait=100; // (default:50)
+var drop = 500; //(default:500-750くらい)
 
 var ar=[];
 var ar2=[];
@@ -111,7 +112,7 @@ phina.define('Title', {
     }
     var start = Button({x:320,y:860,text:'START'}).addChildTo(this);
     start.onpointstart=function(){
-      erase = length*100;
+      erase = length*erase;
       localStorage.setItem('Puzzle_length',length);
       self.exit('main');
     }
@@ -512,6 +513,7 @@ onpointstart: function() {
             .play();
           }
 
+          //effect
           var b= RectangleShape({
             width:64,
             height:64,
@@ -578,7 +580,7 @@ onpointstart: function() {
         else{
           //Spaceぶん下に移動
           ar[y-space][x] = ar[y][x];
-          sprites[y][x].tweener.moveBy(0, space*64, drop).wait(50).play();
+          sprites[y][x].tweener.moveBy(0, space*64, drop).wait(wait).play();
         }
 
       }
@@ -595,7 +597,7 @@ onpointstart: function() {
       ar[col-space+s][x]=ar2[s][x];
       //console.log(col-space+s+","+x +" <- "+ s +","+x + " ("+ ar2[s][x] +")");
       sprite_moving++;
-      sprites2[s][x].tweener.moveBy(0, space*64, drop).wait(50)
+      sprites2[s][x].tweener.moveBy(0, space*64, drop).wait(wait)
       .call(function() {
         sprite_moving--;
 
