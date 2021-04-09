@@ -253,9 +253,9 @@ onpointstart: function() {
 
     var group = DisplayElement().addChildTo(this);
     var group2 = DisplayElement().addChildTo(this);
-    var label = Label({x:32,y:32,fontSize:32,align:'left',fill:'white',text:''}).addChildTo(this);
-    var labeldel = Label({x:320-32,y:32,fontSize:32,fill:'white',text:''}).addChildTo(this);
-    var labelscore = Label({x:640-32,y:32,fontSize:32,align:'right',fill:'white',text:''}).addChildTo(this);
+    var label = Label({x:16,y:32,fontSize:32,align:'left',fill:'white',text:''}).addChildTo(this);
+    var labeldel = Label({x:16*13,y:32,fontSize:32,align:'left',fill:'white',text:''}).addChildTo(this);
+    var labelscore = Label({x:640-16,y:32,fontSize:32,align:'right',fill:'white',text:''}).addChildTo(this);
 
     matchcheck();
 
@@ -309,19 +309,23 @@ onpointstart: function() {
       if(flag_h || flag_v ==1){
         connectcheck();
       }
+      //Result
       else{
         console.log("終了");
         var shape = Shape().setSize(640,64*6).setPosition(320,64+64*5).addChildTo(group);
         shape.backgroundColor = 'white';
         shape.alpha=0.9;
-        var label1 = Label({x:320,y:64+64*3+32,fontSize:64,fill:'brown',text:""}).addChildTo(group);
-        label1.text="コンボ："+totalcombo;
-        var label2 = Label({x:320,y:64+64*5,fontSize:64,fill:'brown',text:""}).addChildTo(group);
-        var score = totalcombo * totaldelete;
-        label2.text="スコア："+score;
+
         var hi= parseInt(localStorage.getItem('Puzzle_Score('+length+')'),10);
         if(!hi){hi=0;}
-        var label3 = Label({x:320,y:64+64*7-32,fontSize:64,fill:'brown',text:'ハイスコア：'+hi}).addChildTo(group);
+
+        //var label1 = Label({x:320,y:64+64*3+32,fontSize:48,fill:'brown',text:""}).addChildTo(group);
+        //label1.text="コンボ："+totalcombo;
+        var label2 = Label({x:320,y:64+64*4,fontSize:48,fill:'brown',text:""}).addChildTo(group);
+        var score = totalcombo * totaldelete;
+        label2.text="スコア："+score;
+
+        var label3 = Label({x:320,y:64+64*6-32,fontSize:48,fill:'brown',text:'ハイスコア：'+hi}).addChildTo(group);
         SoundManager.play("finish");
 
         var shape = Shape().setSize(640,64*2).setPosition(320,64+64*11).addChildTo(group);
@@ -331,7 +335,7 @@ onpointstart: function() {
 
         if(score>hi){
           localStorage.setItem('Puzzle_Score('+length+')',score);
-          label4.text='新記録';
+          label4.text='NEW RECORD';
           label4.fill='red';
           shape.backgroundColor = 'yellow';
         }
@@ -472,9 +476,9 @@ onpointstart: function() {
             console.log(countup);
             SoundManager.play("delete");
             totalcombo++
-            label.text='コンボ：'+totalcombo;
+            label.text='コンボ:'+totalcombo;
             labeldel.text='消去：'+totaldelete;
-            labelscore.text='スコア：'+(totalcombo * totaldelete);
+            labelscore.text='スコア:'+(totalcombo * totaldelete);
 
             var h= parseInt(localStorage.getItem('Puzzle_Score('+length+')'),10);
             if(!h){h=0;}
