@@ -7,7 +7,7 @@ var SCREEN_HEIGHT = 960;
 //var colors =["red","blue","yellow","grean","purple","pink"];
 
 //var balls =["red","blue","green","yellow","purple","pink"];
-var balls =["yellow","blue","red","pink","orange","green"];
+var balls =["one","two","three","four","five","six","seven","eight","nine"];
 var length = 6; //3-6
 var row=10; //max:12
 var col=14; //max:19
@@ -44,18 +44,20 @@ var combo=0;
 var countup=0; //落下ごとのコンボ数
 var totalcombo = 0;
 var totaldelete = 0;
-
+var max=9;
 var mid;
 
 var ASSETS = {
   image: {
-    'red': 'img/3.png',
-    'blue': 'img/2.png',
-    'green': 'img/6.png',
-    'yellow': 'img/1.png',
-    'purple': 'img/5.png',
-    'orange': 'img/5.png',
-    'pink': 'img/4.png',
+    'one': 'img/1.png',
+    'two': 'img/2.png',
+    'three': 'img/3.png',
+    'four': 'img/4.png',
+    'five': 'img/5.png',
+    'six': 'img/6.png',
+    'seven': 'img/7.png',
+    'eight': 'img/8.png',
+    'nine': 'img/9.png',
   },
   sound: {
 
@@ -86,24 +88,25 @@ phina.define('Title', {
     button1.onpointstart=function(){length= Math.max(3,length-1); num.text=length;Ball(); Score();}
 
     var button2= Button({x:480,y:480,width:100,height:100,fontSize:48,text:'+',fill:'white',fontColor:'black'}).addChildTo(this);
-    button2.onpointstart=function(){length= Math.min(6,length+1); num.text=length;Ball(); Score();}
+    button2.onpointstart=function(){length= Math.min(max,length+1); num.text=length;Ball(); Score();}
 
     var label = Label({x:320,y:720,fontSize:32,text:'',fill:'white'}).addChildTo(self);
 
 
     Score();
     function Score(){
-    var hi= parseInt(localStorage.getItem('Puzzle_Score('+length+')'),10);
-    if(!hi){hi=0;}
-    label.text='ハイスコア：'+hi;
+      var hi= parseInt(localStorage.getItem('Puzzle_Score('+length+')'),10);
+      if(!hi){hi=0;}
+      label.text='ハイスコア：'+hi;
     }
 
     Ball()
     function Ball(){
-      for(var a=0; a<6; a++){if(set[a])set[a].remove();}
+      var s=68;
+      for(var a=0; a<max; a++){if(set[a])set[a].remove();}
       for(var i=0; i<length; i++){
         set[i] = Sprite(balls[i],502,502).setSize(64,64).addChildTo(self);
-        set[i].setPosition(320+96*i-(96*(length-1)/2),640);
+        set[i].setPosition(320+s*i-(s*(length-1)/2),640);
       }
     }
     var start = Button({x:320,y:860,text:'START'}).addChildTo(this);
@@ -321,11 +324,14 @@ onpointstart: function() {
 
         //var label1 = Label({x:320,y:64+64*3+32,fontSize:48,fill:'brown',text:""}).addChildTo(group);
         //label1.text="コンボ："+totalcombo;
-        var label2 = Label({x:320,y:64+64*4,fontSize:48,fill:'brown',text:""}).addChildTo(group);
-        var score = totalcombo * totaldelete;
-        label2.text="スコア："+score;
+        //var label2 = Label({x:320,y:64+64*5,fontSize:48,fill:'brown',text:""}).addChildTo(group);
+        //var label3 = Label({x:320,y:64+64*7-32,fontSize:48,fill:'brown',text:'ハイスコア：'+hi}).addChildTo(group);
 
-        var label3 = Label({x:320,y:64+64*6-32,fontSize:48,fill:'brown',text:'ハイスコア：'+hi}).addChildTo(group);
+        var label2 = Label({x:320,y:64+64*3+32,fontSize:64,fill:'brown',text:""}).addChildTo(group);
+        var score = totalcombo * totaldelete;
+        label2.text="スコア\n"+score;
+
+        var label3 = Label({x:320,y:64+64*7-32,fontSize:64,fill:'brown',text:'ハイスコア\n'+hi}).addChildTo(group);
         SoundManager.play("finish");
 
         var shape = Shape().setSize(640,64*2).setPosition(320,64+64*11).addChildTo(group);
