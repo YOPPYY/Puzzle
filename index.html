@@ -1,25 +1,35 @@
 <!doctype html>
 
 <html>
-  <head>
-    <meta charset='utf-8' />
-    <meta name="viewport" content="width=device-width, user-scalable=no" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <link rel="icon" href="favicon.ico" />
-    <title>Puzzle</title>
-    <!-- phina.js を読み込む -->
-    <script src='https://cdn.jsdelivr.net/npm/phina.js@0.2.2/build/phina.min.js'></script>
+<head>
+  <meta charset='utf-8' />
+  <meta name="viewport" content="width=device-width, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="icon" href="favicon.ico" />
+  <title>Puzzle</title>
 
-    <!-- メイン処理 -->
-    <script src='main.js'></script>
-    <style>#canvas {
-  margin: 0 auto;
-  width: 640px;
-  height: 960px;
-  display: block;
-}</style>
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-analytics.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-database.js"></script>
+
+  <!-- phina.js を読み込む -->
+  <script src='https://cdn.jsdelivr.net/npm/phina.js@0.2.2/build/phina.min.js'></script>
+
+  <!-- メイン処理 -->
+  <script src='main.js'></script>
+
+
+
+  <style>#canvas {
+    margin: 0 auto;
+    width: 640px;
+    height: 960px;
+    display: block;
+    }</style>
   </head>
   <body>
     <canvas id = "canvas"></canvas>
   </body>
-</html>
+  </html>

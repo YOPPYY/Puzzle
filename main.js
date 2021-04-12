@@ -248,6 +248,7 @@ phina.define('Main', {
 },
 
 onpointstart: function() {
+
   label0.remove();
   if(clicked==true && finished== true){
     location.reload();
