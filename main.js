@@ -352,29 +352,15 @@ onpointstart: function() {
         //送信
         //ここから
 
-        // Your web app's Firebase configuration
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-        var firebaseConfig = {
-          apiKey: "AIzaSyC1KVUd3O5ueLNLzqN1IRbfKTR7El_06TU",
-          authDomain: "puzzledb-b1b5a.firebaseapp.com",
-          projectId: "puzzledb-b1b5a",
-          storageBucket: "puzzledb-b1b5a.appspot.com",
-          messagingSenderId: "1082787167843",
-          appId: "1:1082787167843:web:d5f94905ec20079010c256",
-          measurementId: "G-K2T51ETCX6"
-        }
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        firebase.analytics();
-        
+
         var date = new Date();
         var db = firebase.firestore();
-        var id=['3','4','5','6','7','8','9']
-        db.collection(id[length-3]).add({
+        db.collection("Score").add({
           combo:totalcombo,
           delete:totaldelete,
           score:totalcombo*totaldelete,
           date:date,
+          length:length,
         })
         .then(function (doc) {
           console.log("Document create with ID: ", doc.id);
