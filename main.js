@@ -115,10 +115,8 @@ phina.define('Title', {
       erase = length*erase;
       localStorage.setItem('Puzzle_length',length);
       self.exit('main');
+
     }
-
-
-
 
   },
 });
@@ -348,9 +346,29 @@ onpointstart: function() {
           shape.backgroundColor = 'yellow';
         }
         else{
-
           label4.text='TRY AGAIN';
         }
+
+        //送信
+        //ここから
+        var date = new Date();
+        var db = firebase.firestore();
+        db.collection("PuzzleScore").add({
+          combo:totalcombo,
+          delete:totaldelete,
+          score:totalcombo*totaldelete,
+          length:length,
+          date:date,
+        })
+        .then(function (doc) {
+          console.log("Document create with ID: ", doc.id);
+        })
+        .catch(function (error) {
+          console.error("Error creating document: ", error);
+        });
+
+        //ここまで
+
         finished=true;
       }
     }
