@@ -357,6 +357,20 @@ onpointstart: function(app) {
         var date = new Date();
         var db = firebase.firestore();
 
+        db.collection("Score").add({
+          combo:totalcombo,
+          delete:totaldelete,
+          score:totalcombo*totaldelete,
+          date:date,
+          length:length,
+        })
+        .then(function (doc) {
+          console.log("Document create with ID: ", doc.id);
+        })
+        .catch(function (error) {
+          console.error("Error creating document: ", error);
+        });
+/*
         switch (length) {
           case 3:
           db.collection("3").add({
@@ -466,7 +480,7 @@ onpointstart: function(app) {
           default:
 
         }
-
+*/
 
         //ここまで
 
