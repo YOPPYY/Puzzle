@@ -19,7 +19,7 @@ var offset_y = 32;
 var coin_size = 64;
 
 //アニメーション速度
-var erase = 100; // erase * length (default:100)
+var erase=0; // erase * length (default:100)
 var wait=100; // (default:50)
 var drop = 500; //(default:500-750くらい)
 
@@ -112,7 +112,7 @@ phina.define('Title', {
     }
     var start = Button({x:320,y:860,text:'START'}).addChildTo(this);
     start.onpointstart=function(){
-      erase = length*erase;
+      erase = Math.min(500,length*100);
       localStorage.setItem('Puzzle_length',length);
       self.exit('main');
 
@@ -245,7 +245,7 @@ phina.define('Main', {
 
 },
 
-onpointstart: function() {
+onpointstart: function(app) {
 
   label0.remove();
   if(clicked==true && finished== true){
@@ -348,6 +348,7 @@ onpointstart: function() {
         else{
           label4.text='TRY AGAIN';
         }
+        console.log(app.frame);
 
         //送信
         //ここから
@@ -355,19 +356,117 @@ onpointstart: function() {
 
         var date = new Date();
         var db = firebase.firestore();
-        db.collection("Score").add({
-          combo:totalcombo,
-          delete:totaldelete,
-          score:totalcombo*totaldelete,
-          date:date,
-          length:length,
-        })
-        .then(function (doc) {
-          console.log("Document create with ID: ", doc.id);
-        })
-        .catch(function (error) {
-          console.error("Error creating document: ", error);
-        });
+
+        switch (length) {
+          case 3:
+          db.collection("3").add({
+            combo:totalcombo,
+            delete:totaldelete,
+            score:totalcombo*totaldelete,
+            date:date,
+            length:length,
+          })
+          .then(function (doc) {
+            console.log("Document create with ID: ", doc.id);
+          })
+          .catch(function (error) {
+            console.error("Error creating document: ", error);
+          });
+          break;
+          case 4:
+          db.collection("4").add({
+            combo:totalcombo,
+            delete:totaldelete,
+            score:totalcombo*totaldelete,
+            date:date,
+            length:length,
+          })
+          .then(function (doc) {
+            console.log("Document create with ID: ", doc.id);
+          })
+          .catch(function (error) {
+            console.error("Error creating document: ", error);
+          });
+          break;
+          case 5:
+          db.collection("5").add({
+            combo:totalcombo,
+            delete:totaldelete,
+            score:totalcombo*totaldelete,
+            date:date,
+            length:length,
+          })
+          .then(function (doc) {
+            console.log("Document create with ID: ", doc.id);
+          })
+          .catch(function (error) {
+            console.error("Error creating document: ", error);
+          });
+          break;
+          case 6:
+          db.collection("6").add({
+            combo:totalcombo,
+            delete:totaldelete,
+            score:totalcombo*totaldelete,
+            date:date,
+            length:length,
+          })
+          .then(function (doc) {
+            console.log("Document create with ID: ", doc.id);
+          })
+          .catch(function (error) {
+            console.error("Error creating document: ", error);
+          });
+          break;
+          case 7:
+          db.collection("7").add({
+            combo:totalcombo,
+            delete:totaldelete,
+            score:totalcombo*totaldelete,
+            date:date,
+            length:length,
+          })
+          .then(function (doc) {
+            console.log("Document create with ID: ", doc.id);
+          })
+          .catch(function (error) {
+            console.error("Error creating document: ", error);
+          });
+          break;
+          case 8:
+          db.collection("8").add({
+            combo:totalcombo,
+            delete:totaldelete,
+            score:totalcombo*totaldelete,
+            date:date,
+            length:length,
+          })
+          .then(function (doc) {
+            console.log("Document create with ID: ", doc.id);
+          })
+          .catch(function (error) {
+            console.error("Error creating document: ", error);
+          });
+          break;
+          case 9:
+          db.collection("9").add({
+            combo:totalcombo,
+            delete:totaldelete,
+            score:totalcombo*totaldelete,
+            date:date,
+            length:length,
+          })
+          .then(function (doc) {
+            console.log("Document create with ID: ", doc.id);
+          })
+          .catch(function (error) {
+            console.error("Error creating document: ", error);
+          });
+          break;
+          default:
+
+        }
+
 
         //ここまで
 
