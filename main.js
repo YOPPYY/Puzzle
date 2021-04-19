@@ -80,14 +80,14 @@ phina.define('Title', {
     this.backgroundColor = 'saddlebrown';
 
 
-        var grad = Canvas.createLinearGradient(-320, -480, 320, 480);
+    var grad = Canvas.createLinearGradient(-320, -480, 320, 480);
 
-        grad.addColorStop(0, 'blue');
-        grad.addColorStop(0.5,'lightblue');
-        grad.addColorStop(0.7,'sandybrown');
-        //grad.addColorStop(1, g);
-        var rect = RectangleShape().setPosition(320,480).addChildTo(this).setSize(640,960);
-        rect.fill=grad;
+    grad.addColorStop(0, 'blue');
+    grad.addColorStop(0.5,'lightblue');
+    grad.addColorStop(0.7,'sandybrown');
+    //grad.addColorStop(1, g);
+    var rect = RectangleShape().setPosition(320,480).addChildTo(this).setSize(640,960);
+    rect.fill=grad;
 
     var dra =Sprite('dragon',719,647).setScale(0.5).setPosition(170,170).addChildTo(self);
     var zeus = Sprite('zeus',800,800).setScale(0.45).setPosition(450,190).addChildTo(self);
@@ -97,12 +97,12 @@ phina.define('Title', {
     length= parseInt(localStorage.getItem('Puzzle_length'),10);
     if(!length){length=5;}
 
-    Label({text:'落ちコン',fontSize: 64,x:this.gridX.center()-128,y:280,fill:'purple',stroke:'silver',strokeWidth:5,}).addChildTo(this);
-    Label({text:'お祈り杯',fontSize: 64,x:this.gridX.center()+128,y:280,fill:'orange',stroke:'silver',strokeWidth:5,}).addChildTo(this);
+    Label({text:'落ちコン',fontSize: 64,x:this.gridX.center()-128,y:280,fill:'purple',stroke:'white',strokeWidth:5,}).addChildTo(this);
+    Label({text:'お祈り杯',fontSize: 64,x:this.gridX.center()+128,y:280,fill:'orange',stroke:'white',strokeWidth:5,}).addChildTo(this);
 
 
     //Label({x:320,y:480-96,fontSize:48,text:'レベル',fill:'white'}).addChildTo(this);
-    var num=Label({x:320,y:480,text:'レベル'+length,fontSize:48,fill:'white'}).addChildTo(this);
+    var num=Label({x:320,y:480,text:'レベル'+length,fontSize:48,fill:'black'}).addChildTo(this);
 
     var button1=Button({x:120,y:480,width:100,height:100,fontSize:48,text:'-',fill:'white',fontColor:'black'}).addChildTo(this);
     button1.onpointstart=function(){length= Math.max(3,length-1); num.text='レベル'+length;Ball(); Score();}
@@ -376,7 +376,15 @@ onpointstart: function(app) {
           console.log("Document create with ID: ", doc.id);
           setdata.push(totalcombo*totaldelete);
           setdata.push(doc.id);
-          console.log(score+" "+hi);
+
+          var last= JSON.parse(localStorage.getItem('Puzzle_History'));
+          if(!last){last=[];}
+          last.unshift(doc.id); //追加
+          if(last.length>100){
+            last = last.slice(0,100); //切り捨て
+          }
+          localStorage.setItem('Puzzle_History',JSON.stringify(last));
+
           if(score>hi){
             localStorage.setItem('Puzzle_Score('+length+')',JSON.stringify(setdata));
           }
@@ -385,8 +393,6 @@ onpointstart: function(app) {
         .catch(function (error) {
           console.error("Error creating document: ", error);
         });
-
-
 
         //ここまで
         if(score>hi){

@@ -5,8 +5,12 @@
   <meta charset='utf-8' />
   <meta name="viewport" content="width=device-width, user-scalable=no" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <style>body{background-color:#ddf;} body{text-align:center;} /*.l{text-align:left;}*/ table{width:100%;} table{border-collapse:collapse;}
-  td,caption{border:1px gray solid;} </style>
+  <style>
+  body{background-color:#ddf;}
+  body{text-align:center;} /*.l{text-align:left;}*/
+  table{width:100%;} table{border-collapse:collapse;}
+  td,caption{border:1px gray solid;} .my{background-color: gold}
+  tr :not(.my>* ,.not){background-color: white}</style>
   <title>Ranking</title>
 
   <!-- The core Firebase JS SDK is always required and must be listed first -->
@@ -37,20 +41,31 @@
 
   window.onload = function(){
     //New();
+        LastDisp();
   }
   function Get(setlength){
+
+    //ハイスコアのidをロード
+    var hi_id=''
+    var strage = JSON.parse(localStorage.getItem('Puzzle_Score('+setlength+')'));
+    if(strage){hi_id = strage[1];}
+
     db.collection("Score").where("length", "==", setlength).orderBy('score','desc').limit(100).get().then((snapShot) => {
       var i=0;
-      var now=new Date();
+      var now=new Date().toLocaleString("ja");;
       document.getElementById("gettime").innerHTML="<small>取得日時："+now+"</small>";
       var color=Color(setlength);
-      var t="<table bgcolor='white'><caption  style='background-color:"+color+"'>"+"ランキング("+setlength+"色)"+"</caption><tr><td class='c'>順位</td><td class='c'>コンボ</td><td class='c'>得点</td><td class='c'>日時</td></tr>"
+      var t="<table><caption style='background-color:"+color+"'>"+"ランキング("+setlength+"色)"+"</caption><tr><td class='c'>順位</td><td class='c'>コンボ</td><td class='c'>得点</td><td class='c'>日時</td></tr>"
       snapShot.forEach((doc) => {
         i++
         var d = new Date( doc.get("date") * 1000 );
         var datestr = DateStr(d);
 
-        t+="<tr><td>"+i+"</td>"+"<td class='l'>"+doc.get("combo")+"</td><td class='l'>"+doc.get("score")+"</td>"+"<td>"+datestr+"</td></tr>";
+        //自分のスコアをハイライト表示
+        var my='';
+        if(hi_id===doc.id){my='my'}
+
+        t+="<tr class='"+my+"'><td>"+i+"</td>"+"<td class='l'>"+doc.get("combo")+"</td><td>"+doc.get("score")+"</td>"+"<td>"+datestr+"</td></tr>";
       });
       t+="</table>";
       document.getElementById("ranking").innerHTML=t;
@@ -64,22 +79,31 @@
     });
 
     db.collection("Score").orderBy('date','desc').limit(100).get().then((snapShot) => {
+      var last= JSON.parse(localStorage.getItem('Puzzle_History'));
       var i=0;
-      var now=new Date();
+      var now=new Date().toLocaleString("ja");;
       document.getElementById("gettime").innerHTML="<small>取得日時："+now+"</small>";
 
-      var t="<table bgcolor='white'><caption  style='background-color: #cff'>"+"最新100件（全"+ size +"件）"+"</caption><tr>　<td class='c'>No.</td>　<td class='c'>色数</td>　<td class='c'>コンボ</td>　<td class='c'>得点</td>　<td class='c'>日時</td>　</tr>"
+      var t="<table><caption  style='background-color: #cff'>"+"最新100件（全"+ size +"件）"+"</caption><tr>　<td class='c'>No.</td>　<td class='c'>色数</td>　<td class='c'>コンボ</td>　<td class='c'>得点</td>　<td class='c'>日時</td>　</tr>"
       snapShot.forEach((doc) => {
-        console.log(doc.id);
+
         i++
         var d = new Date( doc.get("date") * 1000 );
         var datestr = DateStr(d);
 
+        //自分の最終スコアをハイライト表示
+        var my='';
+        for(var n in last){
+          if(last[n]===doc.id){my='my'}
+        }
+
         var l=doc.get("length");
         var color=Color(l);
-        t+="<tr><td>"+i+"</td>"
-        +"<td bgcolor="+ color +">"+ l +"</td>"
-        +"<td>"+doc.get("combo")+"</td><td>"+doc.get("score")+"</td>"+"<td>"+datestr+"</td></tr>";
+        t+="<tr class='"+my+"'><td>"+i+"</td>"
+        +"<td class='not' bgcolor="+ color +">"+ l +"</td>"
+        +"<td class='not' bgcolor="+ color +">"+doc.get('combo')+"</td>"
+        +"<td class='not' bgcolor="+ color +">"+doc.get("score")+"</td>"
+        +"<td class='not' bgcolor="+ color +">"+datestr+"</td></tr>";
       });
       t+="</table>";
       document.getElementById("ranking").innerHTML=t;
@@ -123,6 +147,13 @@
     var min  = ( d.getMinutes() < 10 ) ? '0' + d.getMinutes() : d.getMinutes();
     var sec   = ( d.getSeconds() < 10 ) ? '0' + d.getSeconds() : d.getSeconds();
     return (year+"/"+month+"/"+day+" "+hour+":"+min+":"+sec);
+
+  }
+
+  function LastDisp(){
+    var last = new Date();
+    console.log(last)
+  //localStorage.setItem('Puzzle_Ranking_LastDisp',JSON.stringify(setdata));
   }
   </script>
 
@@ -144,7 +175,7 @@
   </p>
 
   <div id="gettime"></div>
-  <div id="ranking" width="100%"></div>
+  <div id="ranking" width="100%">ボタンクリックで取得</div>
 
 </body>
 </html>
