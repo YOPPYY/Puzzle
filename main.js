@@ -50,6 +50,9 @@ var mid;
 
 var ASSETS = {
   image: {
+    'dragon':'dragon.png',
+    'zeus':'zeus.png',
+    'inori':'inori.png',
     'one': 'img/1.png',
     'two': 'img/2.png',
     'three': 'img/3.png',
@@ -68,12 +71,16 @@ var ASSETS = {
 };
 
 phina.define('Title', {
-  superClass: 'CanvasScene',
+  superClass: 'DisplayScene',
   init: function() {
     this.superInit();
     var self=this;
     // 背景色を指定
     this.backgroundColor = '#444';
+
+    var zeus = Sprite('zeus').setPosition(500,200).addChildTo(self);
+    var dra =Sprite('dragon').setPosition(200,200).addChildTo(self);
+    var inori =Sprite('inoru').setPosition(500,700).addChildTo(self);
 
     length= parseInt(localStorage.getItem('Puzzle_length'),10);
     if(!length){length=5;}
@@ -96,8 +103,10 @@ phina.define('Title', {
 
     Score();
     function Score(){
-      var hi= parseInt(localStorage.getItem('Puzzle_Score('+length+')'),10);
-      if(!hi){hi=0;}
+      var get = JSON.parse(localStorage.getItem('Puzzle_Score('+length+')'));
+      if(get){hi = get[0];}
+      else{hi=0;}
+      console.log(hi)
       label.text='ハイスコア：'+hi;
     }
 
@@ -319,9 +328,6 @@ onpointstart: function(app) {
         shape.backgroundColor = 'white';
         shape.alpha=0.9;
 
-        var hi= parseInt(localStorage.getItem('Puzzle_Score('+length+')'),10);
-        if(!hi){hi=0;}
-
         //var label1 = Label({x:320,y:64+64*3+32,fontSize:48,fill:'brown',text:""}).addChildTo(group);
         //label1.text="コンボ："+totalcombo;
         //var label2 = Label({x:320,y:64+64*5,fontSize:48,fill:'brown',text:""}).addChildTo(group);
@@ -339,23 +345,13 @@ onpointstart: function(app) {
         shape.alpha=0.9;
         var label4 = Label({x:320,y:64+64*11,fontSize:64,fill:'black',text:''}).addChildTo(group);
 
-        if(score>hi){
-          localStorage.setItem('Puzzle_Score('+length+')',score);
-          label4.text='NEW RECORD';
-          label4.fill='red';
-          shape.backgroundColor = 'yellow';
-        }
-        else{
-          label4.text='TRY AGAIN';
-        }
-        console.log(app.frame);
-
         //送信
         //ここから
 
 
         var date = new Date();
         var db = firebase.firestore();
+        var setdata=[];
 
         db.collection("Score").add({
           combo:totalcombo,
@@ -366,123 +362,30 @@ onpointstart: function(app) {
         })
         .then(function (doc) {
           console.log("Document create with ID: ", doc.id);
+          setdata.push(totalcombo*totaldelete);
+          setdata.push(doc.id);
+          console.log(score+" "+hi);
+          if(score>hi){
+            localStorage.setItem('Puzzle_Score('+length+')',JSON.stringify(setdata));
+          }
+
         })
         .catch(function (error) {
           console.error("Error creating document: ", error);
         });
-/*
-        switch (length) {
-          case 3:
-          db.collection("3").add({
-            combo:totalcombo,
-            delete:totaldelete,
-            score:totalcombo*totaldelete,
-            date:date,
-            length:length,
-          })
-          .then(function (doc) {
-            console.log("Document create with ID: ", doc.id);
-          })
-          .catch(function (error) {
-            console.error("Error creating document: ", error);
-          });
-          break;
-          case 4:
-          db.collection("4").add({
-            combo:totalcombo,
-            delete:totaldelete,
-            score:totalcombo*totaldelete,
-            date:date,
-            length:length,
-          })
-          .then(function (doc) {
-            console.log("Document create with ID: ", doc.id);
-          })
-          .catch(function (error) {
-            console.error("Error creating document: ", error);
-          });
-          break;
-          case 5:
-          db.collection("5").add({
-            combo:totalcombo,
-            delete:totaldelete,
-            score:totalcombo*totaldelete,
-            date:date,
-            length:length,
-          })
-          .then(function (doc) {
-            console.log("Document create with ID: ", doc.id);
-          })
-          .catch(function (error) {
-            console.error("Error creating document: ", error);
-          });
-          break;
-          case 6:
-          db.collection("6").add({
-            combo:totalcombo,
-            delete:totaldelete,
-            score:totalcombo*totaldelete,
-            date:date,
-            length:length,
-          })
-          .then(function (doc) {
-            console.log("Document create with ID: ", doc.id);
-          })
-          .catch(function (error) {
-            console.error("Error creating document: ", error);
-          });
-          break;
-          case 7:
-          db.collection("7").add({
-            combo:totalcombo,
-            delete:totaldelete,
-            score:totalcombo*totaldelete,
-            date:date,
-            length:length,
-          })
-          .then(function (doc) {
-            console.log("Document create with ID: ", doc.id);
-          })
-          .catch(function (error) {
-            console.error("Error creating document: ", error);
-          });
-          break;
-          case 8:
-          db.collection("8").add({
-            combo:totalcombo,
-            delete:totaldelete,
-            score:totalcombo*totaldelete,
-            date:date,
-            length:length,
-          })
-          .then(function (doc) {
-            console.log("Document create with ID: ", doc.id);
-          })
-          .catch(function (error) {
-            console.error("Error creating document: ", error);
-          });
-          break;
-          case 9:
-          db.collection("9").add({
-            combo:totalcombo,
-            delete:totaldelete,
-            score:totalcombo*totaldelete,
-            date:date,
-            length:length,
-          })
-          .then(function (doc) {
-            console.log("Document create with ID: ", doc.id);
-          })
-          .catch(function (error) {
-            console.error("Error creating document: ", error);
-          });
-          break;
-          default:
 
-        }
-*/
+
 
         //ここまで
+        if(score>hi){
+          localStorage.setItem('Puzzle_Score('+length+')',JSON.stringify(setdata));
+          label4.text='NEW RECORD';
+          label4.fill='red';
+          shape.backgroundColor = 'yellow';
+        }
+        else{
+          label4.text='TRY AGAIN';
+        }
 
         finished=true;
       }
@@ -621,8 +524,9 @@ onpointstart: function(app) {
             labeldel.text='消去：'+totaldelete;
             labelscore.text='スコア:'+(totalcombo * totaldelete);
 
-            var h= parseInt(localStorage.getItem('Puzzle_Score('+length+')'),10);
-            if(!h){h=0;}
+            var get = JSON.parse(localStorage.getItem('Puzzle_Score('+length+')'));
+            if(get){h = get[0];}
+            else{h=0;}
             if(h<totalcombo * totaldelete){labelscore.fill='yellow';}
 
             sprites[posy][posx].tweener.fadeOut(erase).wait(wait)
