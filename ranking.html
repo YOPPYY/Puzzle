@@ -36,7 +36,7 @@
   const db = firebase.firestore();
 
   window.onload = function(){
-    New();
+    //New();
   }
   function Get(setlength){
     db.collection("Score").where("length", "==", setlength).orderBy('score','desc').limit(100).get().then((snapShot) => {
