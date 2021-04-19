@@ -5,110 +5,146 @@
   <meta charset='utf-8' />
   <meta name="viewport" content="width=device-width, user-scalable=no" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <style>body{background-color:#ccc;} body{text-align:center;} /*.l{text-align:left;}*/ table{width:100%;} table{border-collapse:collapse;}
-    td,caption{border:1px gray solid;} </style>
-    <title>Ranking</title>
+  <style>body{background-color:#ddf;} body{text-align:center;} /*.l{text-align:left;}*/ table{width:100%;} table{border-collapse:collapse;}
+  td,caption{border:1px gray solid;} </style>
+  <title>Ranking</title>
 
-    <!-- The core Firebase JS SDK is always required and must be listed first -->
-    <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-analytics.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-messaging.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-functions.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-firestore.js"></script>
-
-
-    <script>
-
-      var firebaseConfig = {
-        apiKey: "AIzaSyC1KVUd3O5ueLNLzqN1IRbfKTR7El_06TU",
-        authDomain: "puzzledb-b1b5a.firebaseapp.com",
-        projectId: "puzzledb-b1b5a",
-        storageBucket: "puzzledb-b1b5a.appspot.com",
-        messagingSenderId: "1082787167843",
-        appId: "1:1082787167843:web:d5f94905ec20079010c256",
-        measurementId: "G-K2T51ETCX6"
-      }
-
-      firebase.initializeApp(firebaseConfig);
-      firebase.analytics();
-      const db = firebase.firestore();
-
-      window.onload = function(){
-        New();
-      }
-      function Get(setlength){
-        db.collection("Score").where("length", "==", setlength).orderBy('score','desc').limit(100).get().then((snapShot) => {
-          var i=0;
-          var now=new Date();
-          document.getElementById("gettime").innerHTML="<small>取得日時："+now+"</small>";
-          var t="<table><caption>"+"ランキング("+setlength+"色)"+"</caption><tr><td class='c'>順位</td><td class='c'>コンボ</td><td class='c'>得点</td><td class='c'>日時</td></tr>"
-            snapShot.forEach((doc) => {
-              i++
-              var d = new Date( doc.get("date") * 1000 );
-              var year  = d.getFullYear()-1969;
-              var month = d.getMonth() + 1;
-              var day  = d.getDate();
-              var hour = ( d.getHours()   < 10 ) ? '0' + d.getHours()   : d.getHours();
-              var min  = ( d.getMinutes() < 10 ) ? '0' + d.getMinutes() : d.getMinutes();
-              var sec   = ( d.getSeconds() < 10 ) ? '0' + d.getSeconds() : d.getSeconds();
-              var datestr = year+"/"+month+"/"+day+" "+hour+":"+min+":"+sec;
-              t+="<tr><td>"+i+"</td>"+"<td class='l'>"+doc.get("combo")+"</td><td class='l'>"+doc.get("score")+"</td>"+"<td>"+datestr+"</td></tr>";
-            });
-            t+="</table>";
-            document.getElementById("ranking").innerHTML=t;
-          });
-        }
-
-        function New(){
-          var size;
-          db.collection('Score').get().then(snap => {
-            size = snap.size;
-          });
-
-          db.collection("Score").orderBy('date','desc').limit(100).get().then((snapShot) => {
-            var i=0;
-            var now=new Date();
-            document.getElementById("gettime").innerHTML="<small>取得日時："+now+"</small>";
-            var t="<table><caption>"+"最新順　全"+ size +"件"+"</caption><tr><td class='c'>No.</td><td class='c'>コンボ</td><td class='c'>得点</td><td class='c'>日時</td></tr>"
-              snapShot.forEach((doc) => {
-                i++
-                var d = new Date( doc.get("date") * 1000 );
-                var year  = d.getFullYear()-1969;
-                var month = d.getMonth() + 1;
-                var day  = d.getDate();
-                var hour = ( d.getHours()   < 10 ) ? '0' + d.getHours()   : d.getHours();
-                var min  = ( d.getMinutes() < 10 ) ? '0' + d.getMinutes() : d.getMinutes();
-                var sec   = ( d.getSeconds() < 10 ) ? '0' + d.getSeconds() : d.getSeconds();
-                var datestr = year+"/"+month+"/"+day+" "+hour+":"+min+":"+sec;
-                t+="<tr><td>"+i+"</td>"+"<td>"+doc.get("combo")+"</td><td>"+doc.get("score")+"</td>"+"<td>"+datestr+"</td></tr>";
-              });
-              t+="</table>";
-              document.getElementById("ranking").innerHTML=t;
-            });
-          }
-        </script>
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-analytics.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-messaging.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-functions.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-firestore.js"></script>
 
 
-      </head>
-      <body>
+  <script>
 
-        <!--<div id="header">ボタンクリックで取得<span id="size"></span></div>-->
+  var firebaseConfig = {
+    apiKey: "AIzaSyC1KVUd3O5ueLNLzqN1IRbfKTR7El_06TU",
+    authDomain: "puzzledb-b1b5a.firebaseapp.com",
+    projectId: "puzzledb-b1b5a",
+    storageBucket: "puzzledb-b1b5a.appspot.com",
+    messagingSenderId: "1082787167843",
+    appId: "1:1082787167843:web:d5f94905ec20079010c256",
+    measurementId: "G-K2T51ETCX6"
+  }
 
-        <p id="buttons" width="100%">
-          <input type="button" width="100%" value="最新" onclick="New()" style="background-color:white">
-          <input type="button" width="100%" value="3色" onclick="Get(3)" style="background-color:Tomato">
-          <input type="button" width="100%" value="4色" onclick="Get(4)" style="background-color:lightgreen">
-          <input type="button" width="100%" value="5色" onclick="Get(5)" style="background-color:pink">
-          <input type="button" width="100%" value="6色" onclick="Get(6)" style="background-color:orange">
-          <input type="button" width="100%" value="7色" onclick="Get(7)" style="background-color:Plum">
-          <input type="button" width="100%" value="8色" onclick="Get(8)" style="background-color:lightgray">
-          <input type="button" width="100%" value="9色" onclick="Get(9)" style="background-color:yellow">
-        </p>
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+  const db = firebase.firestore();
 
-        <div id="gettime"></div>
-        <div id="ranking" width="100%"></div>
+  window.onload = function(){
+    New();
+  }
+  function Get(setlength){
+    db.collection("Score").where("length", "==", setlength).orderBy('score','desc').limit(100).get().then((snapShot) => {
+      var i=0;
+      var now=new Date();
+      document.getElementById("gettime").innerHTML="<small>取得日時："+now+"</small>";
+      var color=Color(setlength);
+      var t="<table bgcolor='white'><caption  style='background-color:"+color+"'>"+"ランキング("+setlength+"色)"+"</caption><tr><td class='c'>順位</td><td class='c'>コンボ</td><td class='c'>得点</td><td class='c'>日時</td></tr>"
+      snapShot.forEach((doc) => {
+        i++
+        var d = new Date( doc.get("date") * 1000 );
+        var datestr = DateStr(d);
 
-      </body>
-      </html>
+        t+="<tr><td>"+i+"</td>"+"<td class='l'>"+doc.get("combo")+"</td><td class='l'>"+doc.get("score")+"</td>"+"<td>"+datestr+"</td></tr>";
+      });
+      t+="</table>";
+      document.getElementById("ranking").innerHTML=t;
+    });
+  }
+
+  function New(){
+    var size;
+    db.collection('Score').get().then(snap => {
+      size = snap.size;
+    });
+
+    db.collection("Score").orderBy('date','desc').limit(100).get().then((snapShot) => {
+      var i=0;
+      var now=new Date();
+      document.getElementById("gettime").innerHTML="<small>取得日時："+now+"</small>";
+
+      var t="<table bgcolor='white'><caption  style='background-color: #cff'>"+"最新100件　（全"+ size +"件）"+"</caption><tr>　<td class='c'>No.</td>　<td class='c'>色数</td>　<td class='c'>コンボ</td>　<td class='c'>得点</td>　<td class='c'>日時</td>　</tr>"
+      snapShot.forEach((doc) => {
+        console.log(doc.id);
+        i++
+        var d = new Date( doc.get("date") * 1000 );
+        var datestr = DateStr(d);
+
+        var l=doc.get("length");
+        var color=Color(l);
+        t+="<tr><td>"+i+"</td>"
+        +"<td bgcolor="+ color +">"+ l +"</td>"
+        +"<td>"+doc.get("combo")+"</td><td>"+doc.get("score")+"</td>"+"<td>"+datestr+"</td></tr>";
+      });
+      t+="</table>";
+      document.getElementById("ranking").innerHTML=t;
+    });
+  }
+
+  function Color(l){
+    switch (l) {
+      case 3:
+      color='Tomato';
+      break;
+      case 4:
+      color='lightgreen';
+      break;
+      case 5:
+      color='pink';
+      break;
+      case 6:
+      color='orange';
+      break;
+      case 7:
+      color='Plum';
+      break;
+      case 8:
+      color='lightgray';
+      break;
+      case 9:
+      color='yellow';
+      break;
+      default:
+      color="white";
+    }
+    return color;
+  }
+
+  function DateStr(d){
+    var year  = d.getFullYear()-1969;
+    var month = d.getMonth() + 1;
+    var day  = d.getDate();
+    var hour = ( d.getHours()   < 10 ) ? '0' + d.getHours()   : d.getHours();
+    var min  = ( d.getMinutes() < 10 ) ? '0' + d.getMinutes() : d.getMinutes();
+    var sec   = ( d.getSeconds() < 10 ) ? '0' + d.getSeconds() : d.getSeconds();
+    return (year+"/"+month+"/"+day+" "+hour+":"+min+":"+sec);
+  }
+  </script>
+
+
+</head>
+<body>
+
+  <!--<div id="header">ボタンクリックで取得<span id="size"></span></div>-->
+
+  <p id="buttons" width="100%">
+    <input type="button" width="100%" value="最新" onclick="New()" style="background-color:#cff">
+    <input type="button" width="100%" value="3色" onclick="Get(3)" style="background-color:Tomato">
+    <input type="button" width="100%" value="4色" onclick="Get(4)" style="background-color:lightgreen">
+    <input type="button" width="100%" value="5色" onclick="Get(5)" style="background-color:pink">
+    <input type="button" width="100%" value="6色" onclick="Get(6)" style="background-color:orange">
+    <input type="button" width="100%" value="7色" onclick="Get(7)" style="background-color:Plum">
+    <input type="button" width="100%" value="8色" onclick="Get(8)" style="background-color:lightgray">
+    <input type="button" width="100%" value="9色" onclick="Get(9)" style="background-color:yellow">
+  </p>
+
+  <div id="gettime"></div>
+  <div id="ranking" width="100%"></div>
+
+</body>
+</html>
