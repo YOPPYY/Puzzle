@@ -102,7 +102,7 @@ phina.define('Title', {
 
 
     //Label({x:320,y:480-96,fontSize:48,text:'レベル',fill:'white'}).addChildTo(this);
-    var num=Label({x:320,y:480,text:'レベル'+length,fontSize:48,fill:'black'}).addChildTo(this);
+    var num=Label({x:320,y:480,text:'レベル'+length,fontSize:48,fill:'black',stroke:'silver',strokeWidth:5}).addChildTo(this);
 
     var button1=Button({x:120,y:480,width:100,height:100,fontSize:48,text:'-',fill:'white',fontColor:'black'}).addChildTo(this);
     button1.onpointstart=function(){length= Math.max(3,length-1); num.text='レベル'+length;Ball(); Score();}
