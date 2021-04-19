@@ -89,8 +89,8 @@ phina.define('Title', {
     var rect = RectangleShape().setPosition(320,480).addChildTo(this).setSize(640,960);
     rect.fill=grad;
 
-    var dra =Sprite('dragon',719,647).setScale(0.5).setPosition(170,170).addChildTo(self);
-    var zeus = Sprite('zeus',800,800).setScale(0.45).setPosition(450,190).addChildTo(self);
+    var dra =Sprite('dragon',719,647).setScale(0.5).setPosition(170,200).addChildTo(self);
+    var zeus = Sprite('zeus',800,800).setScale(0.45).setPosition(450,220).addChildTo(self);
     var anubis = Sprite('anubis',540,800).setScale(0.35).setPosition(100,820).addChildTo(self);
     var inori = Sprite('inori',556,732).setScale(0.35).setPosition(550,820).addChildTo(self);
 
@@ -130,7 +130,7 @@ phina.define('Title', {
       for(var a=0; a<max; a++){if(set[a])set[a].remove();}
       for(var i=0; i<length; i++){
         set[i] = Sprite(balls[i],502,502).setSize(64,64).addChildTo(self);
-        set[i].setPosition(320+s*i-(s*(length-1)/2),640);
+        set[i].setPosition(320+s*i-(s*(length-1)/2),620);
       }
     }
     var start = Button({x:320,y:860,text:'START'}).addChildTo(this);
