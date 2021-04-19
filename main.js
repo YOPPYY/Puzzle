@@ -50,9 +50,10 @@ var mid;
 
 var ASSETS = {
   image: {
-    'dragon':'dragon.png',
-    'zeus':'zeus.png',
-    'inori':'inori.png',
+    'dragon':'img/dragon.png',
+    'zeus':'img/zeus.png',
+    'anubis':'img/anubis.png',
+    'inori':'img/inori.png',
     'one': 'img/1.png',
     'two': 'img/2.png',
     'three': 'img/3.png',
@@ -76,29 +77,40 @@ phina.define('Title', {
     this.superInit();
     var self=this;
     // 背景色を指定
-    this.backgroundColor = '#444';
+    this.backgroundColor = 'saddlebrown';
 
-    var zeus = Sprite('zeus').setPosition(500,200).addChildTo(self);
-    var dra =Sprite('dragon').setPosition(200,200).addChildTo(self);
-    var inori =Sprite('inoru').setPosition(500,700).addChildTo(self);
+
+        var grad = Canvas.createLinearGradient(-320, -480, 320, 480);
+
+        grad.addColorStop(0, 'blue');
+        grad.addColorStop(0.5,'lightblue');
+        grad.addColorStop(0.7,'sandybrown');
+        //grad.addColorStop(1, g);
+        var rect = RectangleShape().setPosition(320,480).addChildTo(this).setSize(640,960);
+        rect.fill=grad;
+
+    var dra =Sprite('dragon',719,647).setScale(0.5).setPosition(170,170).addChildTo(self);
+    var zeus = Sprite('zeus',800,800).setScale(0.45).setPosition(450,190).addChildTo(self);
+    var anubis = Sprite('anubis',540,800).setScale(0.35).setPosition(100,820).addChildTo(self);
+    var inori = Sprite('inori',556,732).setScale(0.35).setPosition(550,820).addChildTo(self);
 
     length= parseInt(localStorage.getItem('Puzzle_length'),10);
     if(!length){length=5;}
 
-    Label({text:'落ちコン',fontSize: 64,x:this.gridX.center()-128,y:180,fill:'purple',stroke:'silver',strokeWidth:5,}).addChildTo(this);
-    Label({text:'お祈り杯',fontSize: 64,x:this.gridX.center()+128,y:180,fill:'orange',stroke:'silver',strokeWidth:5,}).addChildTo(this);
+    Label({text:'落ちコン',fontSize: 64,x:this.gridX.center()-128,y:280,fill:'purple',stroke:'silver',strokeWidth:5,}).addChildTo(this);
+    Label({text:'お祈り杯',fontSize: 64,x:this.gridX.center()+128,y:280,fill:'orange',stroke:'silver',strokeWidth:5,}).addChildTo(this);
 
 
-    Label({x:320,y:360,fontSize:48,text:'レベル',fill:'white'}).addChildTo(this);
-    var num=Label({x:320,y:480,text:length,fontSize:64,fill:'white'}).addChildTo(this);
+    //Label({x:320,y:480-96,fontSize:48,text:'レベル',fill:'white'}).addChildTo(this);
+    var num=Label({x:320,y:480,text:'レベル'+length,fontSize:48,fill:'white'}).addChildTo(this);
 
-    var button1=Button({x:160,y:480,width:100,height:100,fontSize:48,text:'-',fill:'white',fontColor:'black'}).addChildTo(this);
-    button1.onpointstart=function(){length= Math.max(3,length-1); num.text=length;Ball(); Score();}
+    var button1=Button({x:120,y:480,width:100,height:100,fontSize:48,text:'-',fill:'white',fontColor:'black'}).addChildTo(this);
+    button1.onpointstart=function(){length= Math.max(3,length-1); num.text='レベル'+length;Ball(); Score();}
 
-    var button2= Button({x:480,y:480,width:100,height:100,fontSize:48,text:'+',fill:'white',fontColor:'black'}).addChildTo(this);
-    button2.onpointstart=function(){length= Math.min(max,length+1); num.text=length;Ball(); Score();}
+    var button2= Button({x:520,y:480,width:100,height:100,fontSize:48,text:'+',fill:'white',fontColor:'black'}).addChildTo(this);
+    button2.onpointstart=function(){length= Math.min(max,length+1); num.text='レベル'+length;Ball(); Score();}
 
-    var label = Label({x:320,y:720,fontSize:32,text:'',fill:'white'}).addChildTo(self);
+    var label = Label({x:320,y:740,fontSize:32,text:'',fill:'white'}).addChildTo(self);
 
 
     Score();
@@ -107,7 +119,7 @@ phina.define('Title', {
       if(get){hi = get[0];}
       else{hi=0;}
       console.log(hi)
-      label.text='ハイスコア：'+hi;
+      label.text='ハイスコア\n'+hi;
     }
 
     Ball()
@@ -520,8 +532,8 @@ onpointstart: function(app) {
             console.log(countup);
             SoundManager.play("delete");
             totalcombo++
-            label.text='コンボ:'+totalcombo;
-            labeldel.text='消去：'+totaldelete;
+            label.text='コンボ:'+totalcombo+' 消去:'+totaldelete;
+            //labeldel.text='消去:'+totaldelete;
             labelscore.text='スコア:'+(totalcombo * totaldelete);
 
             var get = JSON.parse(localStorage.getItem('Puzzle_Score('+length+')'));
