@@ -115,10 +115,9 @@ phina.define('Title', {
 
     Score();
     function Score(){
+      var hi=0;
       var get = JSON.parse(localStorage.getItem('Puzzle_Score('+length+')'));
       if(get){hi = get[0];}
-      else{hi=0;}
-      console.log(hi)
       label.text='ハイスコア\n'+hi;
     }
 
