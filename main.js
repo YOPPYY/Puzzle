@@ -91,8 +91,8 @@ phina.define('Title', {
 
     var dra =Sprite('dragon',719,647).setScale(0.5).setPosition(170,200).addChildTo(self);
     var zeus = Sprite('zeus',800,800).setScale(0.45).setPosition(450,220).addChildTo(self);
-    var anubis = Sprite('anubis',540,800).setScale(0.35).setPosition(100,820).addChildTo(self);
-    var inori = Sprite('inori',556,732).setScale(0.35).setPosition(550,820).addChildTo(self);
+    var anubis = Sprite('anubis',540,800).setScale(0.4).setPosition(100,810).addChildTo(self);
+    var inori = Sprite('inori',556,732).setScale(0.4).setPosition(550,810).addChildTo(self);
 
     length= parseInt(localStorage.getItem('Puzzle_length'),10);
     if(!length){length=5;}
@@ -102,7 +102,7 @@ phina.define('Title', {
 
 
     //Label({x:320,y:480-96,fontSize:48,text:'レベル',fill:'white'}).addChildTo(this);
-    var num=Label({x:320,y:480,text:'レベル'+length,fontSize:48,fill:'black',stroke:'silver',strokeWidth:5}).addChildTo(this);
+    var num=Label({x:320,y:480,text:'レベル'+length,fontSize:48,fill:'black',stroke:'white',strokeWidth:5}).addChildTo(this);
 
     var button1=Button({x:120,y:480,width:100,height:100,fontSize:48,text:'-',fill:'white',fontColor:'black'}).addChildTo(this);
     button1.onpointstart=function(){length= Math.max(3,length-1); num.text='レベル'+length;Ball(); Score();}
