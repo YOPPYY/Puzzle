@@ -12,7 +12,7 @@ var length = 6; //3-6
 var row=10; //10
 var col=14; //14
 var set=[];
-
+var hi=0;
 
 var offset_x =32;
 var offset_y = 32;
@@ -92,7 +92,7 @@ phina.define('Title', {
     var dra =Sprite('dragon',719,647).setScale(0.5).setPosition(170,200).addChildTo(self);
     var zeus = Sprite('zeus',800,800).setScale(0.45).setPosition(450,220).addChildTo(self);
     var anubis = Sprite('anubis',540,800).setScale(0.4).setPosition(100,810).addChildTo(self);
-    var inori = Sprite('inori',556,732).setScale(0.4).setPosition(550,810).addChildTo(self);
+    var inori = Sprite('inori',556,732).setScale(0.4).setPosition(540,810).addChildTo(self);
 
     length= parseInt(localStorage.getItem('Puzzle_length'),10);
     if(!length){length=5;}
@@ -117,6 +117,7 @@ phina.define('Title', {
     function Score(){
       var get = JSON.parse(localStorage.getItem('Puzzle_Score('+length+')'));
       if(get){hi = get[0];}
+
       if(hi==undefined){
       var setdata=[0,"kari"]; hi=0;
       localStorage.setItem('Puzzle_Score('+length+')',JSON.stringify(setdata));
@@ -337,6 +338,7 @@ onpointstart: function(app) {
       }
       //Result
       else{
+
         console.log("終了");
         var shape = Shape().setSize(640,64*6).setPosition(320,64+64*5).addChildTo(group);
         shape.backgroundColor = 'white';
