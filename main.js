@@ -118,6 +118,7 @@ phina.define('Title', {
       var get = JSON.parse(localStorage.getItem('Puzzle_Score('+length+')'));
       if(get){hi = get[0];}
 
+      //仮データ保存
       if(!hi){
       var setdata=JSON.stringify([0,"kari"]); hi=0;
       localStorage.setItem('Puzzle_Score('+length+')',setdata);
@@ -131,7 +132,7 @@ phina.define('Title', {
       for(var a=0; a<max; a++){if(set[a])set[a].remove();}
       for(var i=0; i<length; i++){
         set[i] = Sprite(balls[i],502,502).setSize(64,64).addChildTo(self);
-        set[i].setPosition(320+s*i-(s*(length-1)/2),620);
+        set[i].setPosition(320+s*i-(s*(length-1)/2),480+128);
       }
     }
     var start = Button({x:320,y:860,text:'START'}).addChildTo(this);
