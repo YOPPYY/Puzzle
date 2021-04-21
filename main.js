@@ -92,7 +92,7 @@ phina.define('Title', {
     var dra =Sprite('dragon',719,647).setScale(0.5).setPosition(170,200).addChildTo(self);
     var zeus = Sprite('zeus',800,800).setScale(0.45).setPosition(450,220).addChildTo(self);
     var anubis = Sprite('anubis',540,800).setScale(0.4).setPosition(100,810).addChildTo(self);
-    var inori = Sprite('inori',556,732).setScale(0.4).setPosition(540,810).addChildTo(self);
+    var inori = Sprite('inori',556,732).setScale(0.4).setPosition(530,810).addChildTo(self);
 
     length= parseInt(localStorage.getItem('Puzzle_length'),10);
     if(!length){length=5;}
@@ -127,7 +127,7 @@ phina.define('Title', {
 
     Ball()
     function Ball(){
-      var s=68;
+      var s=68; //間隔
       for(var a=0; a<max; a++){if(set[a])set[a].remove();}
       for(var i=0; i<length; i++){
         set[i] = Sprite(balls[i],502,502).setSize(64,64).addChildTo(self);
