@@ -3,7 +3,7 @@ phina.globalize();
 
 var SCREEN_WIDTH = 640;
 var SCREEN_HEIGHT = 960;
-
+var v = 'v.210421'
 //var colors =["red","blue","yellow","grean","purple","pink"];
 
 //var balls =["red","blue","green","yellow","purple","pink"];
@@ -99,7 +99,7 @@ phina.define('Title', {
 
     Label({text:'落ちコン',fontSize: 64,x:this.gridX.center()-128,y:280,fill:'purple',stroke:'white',strokeWidth:5,}).addChildTo(this);
     Label({text:'お祈り杯',fontSize: 64,x:this.gridX.center()+128,y:280,fill:'orange',stroke:'white',strokeWidth:5,}).addChildTo(this);
-
+    Label({text:v,fontSize: 16,x:this.gridX.center(),y:960-14,fill:'black',}).addChildTo(this);
 
     //Label({x:320,y:480-96,fontSize:48,text:'レベル',fill:'white'}).addChildTo(this);
     var num=Label({x:320,y:480,text:'レベル'+length,fontSize:48,fill:'black',stroke:'white',strokeWidth:5}).addChildTo(this);
