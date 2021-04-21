@@ -118,9 +118,9 @@ phina.define('Title', {
       var get = JSON.parse(localStorage.getItem('Puzzle_Score('+length+')'));
       if(get){hi = get[0];}
 
-      if(hi==undefined){
-      var setdata=[0,"kari"]; hi=0;
-      localStorage.setItem('Puzzle_Score('+length+')',JSON.stringify(setdata));
+      if(!hi){
+      var setdata=JSON.stringify([0,"kari"]); hi=0;
+      localStorage.setItem('Puzzle_Score('+length+')',setdata);
       }
       label.text='ハイスコア\n'+hi;
     }
