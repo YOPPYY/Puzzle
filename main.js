@@ -116,7 +116,7 @@ phina.define('Title', {
     Score();
     function Score(){
       var get = JSON.parse(localStorage.getItem('Puzzle_Score('+length+')'));
-      console.log(get)
+      //console.log(get)
 
       if(get){
         if(!Array.isArray(get)){hi=get;} //旧型式
@@ -132,10 +132,10 @@ phina.define('Title', {
           if(doc.get("score")){top=doc.get("score")}
 
         });
-      }).then(function(){console.log(top);    label2.text='TOP\n'+top;})
-
-
-
+      }).then(function(){
+        //console.log(top);
+        label2.text='TOP\n'+top;
+      })
     }
 
     Ball()
