@@ -3,7 +3,7 @@ phina.globalize();
 
 var SCREEN_WIDTH = 640;
 var SCREEN_HEIGHT = 960;
-var v = 'v.210421'
+var v = 'v.210422'
 //var colors =["red","blue","yellow","grean","purple","pink"];
 
 //var balls =["red","blue","green","yellow","purple","pink"];
