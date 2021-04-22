@@ -50,26 +50,60 @@
     var strage = JSON.parse(localStorage.getItem('Puzzle_Score('+setlength+')'));
     if(strage){hi_id = strage[1];}
 
-    db.collection("Score").where("length", "==", setlength).orderBy('score','desc').limit(100).get().then((snapShot) => {
-      var i=0;
-      var now=new Date().toLocaleString("ja");;
-      document.getElementById("gettime").innerHTML="<small>取得日時："+now+"</small>";
-      var color=Color(setlength);
-      var t="<table><caption style='background-color:"+color+"'>"+"ランキング("+setlength+"色)"+"</caption><tr><td class='c'>順位</td><td class='c'>コンボ</td><td class='c'>得点</td><td class='c'>日時</td></tr>"
-      snapShot.forEach((doc) => {
-        i++
-        var d = new Date( doc.get("date") * 1000 );
-        var datestr = DateStr(d);
+    var max=0;
 
-        //自分のスコアをハイライト表示
-        var my='';
-        if(hi_id===doc.id){my='my'}
-
-        t+="<tr class='"+my+"'><td>"+i+"</td>"+"<td class='l'>"+doc.get("combo")+"</td><td>"+doc.get("score")+"</td>"+"<td>"+datestr+"</td></tr>";
+    //1位のスコアを取得
+    const first=function(){
+      return new Promise(function(resolve, reject) {
+        db.collection("Score").where("length", "==", setlength).orderBy('score','desc').limit(1).get().then((snapShot) => {
+          snapShot.forEach((doc) => {
+            max = doc.get("score");
+            resolve()
+          });
+        });
       });
-      t+="</table>";
-      document.getElementById("ranking").innerHTML=t;
-    });
+    }
+
+    //ひとつ前の番号の人の点数と同じならば、前の人と同じランクになる。
+    //それ以外の場合、通し番号がランクになる。
+    const second =function(){
+      return new Promise(function(resolve, reject) {
+        db.collection("Score").where("length", "==", setlength).orderBy('score','desc').orderBy('date', 'desc').limit(100).get().then((snapShot) => {
+          var i=1;
+          var uprank=1;
+          var upscore=max;
+          var now=new Date().toLocaleString("ja");
+          document.getElementById("gettime").innerHTML="<small>取得日時："+now+"</small>";
+          var color=Color(setlength);
+          var t="<table><caption style='background-color:"+color+"'>"+"ランキング("+setlength+"色)"+"</caption><tr><td class='c'>順位</td><td class='c'>コンボ</td><td class='c'>得点</td><td class='c'>日時</td></tr>"
+          snapShot.forEach((doc) => {
+
+            var rank;
+            if(doc.get("score")==upscore){rank=uprank;}
+            else{rank=i;uprank=i;}
+
+            upscore=doc.get("score");
+            i++;
+
+
+            var d = new Date( doc.get("date") * 1000 );
+            var datestr = DateStr(d);
+
+            //自分のスコアをハイライト表示
+            var my='';
+            if(hi_id===doc.id){my='my'}
+
+            t+="<tr class='"+my+"'><td>"+rank+"</td>"+"<td class='l'>"+doc.get("combo")+"</td><td>"+doc.get("score")+"</td>"+"<td>"+datestr+"</td></tr>";
+          });
+          t+="</table>";
+          document.getElementById("ranking").innerHTML=t;
+        });
+        resolve()
+      });
+    }
+    first()
+    .then(second)
+
   }
 
   function New(){
@@ -84,7 +118,7 @@
       var now=new Date().toLocaleString("ja");;
       document.getElementById("gettime").innerHTML="<small>取得日時："+now+"</small>";
 
-      var t="<table><caption  style='background-color: #cff'>"+"最新100件（全"+ size +"件）"+"</caption><tr>　<td class='c'>No.</td>　<td class='c'>色数</td>　<td class='c'>コンボ</td>　<td class='c'>得点</td>　<td class='c'>日時</td>　</tr>"
+      var t="<table><caption style='background-color: #cff'>最新100件（全"+ size +"件）</caption> <tr> <td class='c'>No.</td><td class='c'>色数</td> <td class='c'>コンボ</td> <td class='c'>得点</td> <td class='c'>日時</td> </tr>"
       snapShot.forEach((doc) => {
 
         i++
@@ -153,7 +187,7 @@
   function LastDisp(){
     var last = new Date();
     //console.log(last)
-  //localStorage.setItem('Puzzle_Ranking_LastDisp',JSON.stringify(setdata));
+    //localStorage.setItem('Puzzle_Ranking_LastDisp',JSON.stringify(setdata));
   }
   </script>
 

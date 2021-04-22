@@ -116,13 +116,14 @@ phina.define('Title', {
     Score();
     function Score(){
       var get = JSON.parse(localStorage.getItem('Puzzle_Score('+length+')'));
-      if(get){hi = get[0];}
+      console.log(get)
 
-      //仮データ保存
-      if(!hi){
-      var setdata=JSON.stringify([0,"kari"]); hi=0;
-      localStorage.setItem('Puzzle_Score('+length+')',setdata);
+      if(get){
+        if(!Array.isArray(get)){hi=get;} //旧型式
+        else{hi = get[0];}
       }
+      else{hi=0;}
+
       label.text='ハイスコア\n'+hi;
     }
 
@@ -341,9 +342,9 @@ onpointstart: function(app) {
       else{
 
         console.log("終了");
-        var shape = Shape().setSize(640,64*6).setPosition(320,64+64*5).addChildTo(group);
-        shape.backgroundColor = 'white';
-        shape.alpha=0.9;
+        var shape1 = Shape().setSize(640,64*6).setPosition(320,64+64*5).addChildTo(group);
+        shape1.backgroundColor = 'white';
+        shape1.alpha=0.9;
 
         //var label1 = Label({x:320,y:64+64*3+32,fontSize:48,fill:'brown',text:""}).addChildTo(group);
         //label1.text="コンボ："+totalcombo;
@@ -357,9 +358,9 @@ onpointstart: function(app) {
         var label3 = Label({x:320,y:64+64*7-32,fontSize:64,fill:'brown',text:'ハイスコア\n'+hi}).addChildTo(group);
         SoundManager.play("finish");
 
-        var shape = Shape().setSize(640,64*2).setPosition(320,64+64*11).addChildTo(group);
-        shape.backgroundColor = 'white';
-        shape.alpha=0.9;
+        var shape2 = Shape().setSize(640,64*2).setPosition(320,64+64*11).addChildTo(group);
+        shape2.backgroundColor = 'white';
+        shape2.alpha=0.9;
         var label4 = Label({x:320,y:64+64*11,fontSize:64,fill:'black',text:''}).addChildTo(group);
 
         //送信
@@ -400,16 +401,34 @@ onpointstart: function(app) {
         });
 
         //ここまで
+
+        //ローカルハイスコア
         if(score>hi){
           localStorage.setItem('Puzzle_Score('+length+')',JSON.stringify(setdata));
-          label4.text='NEW RECORD';
-          label4.fill='red';
-          shape.backgroundColor = 'yellow';
+          shape1.backgroundColor = 'yellow';
+          label2.fill='red';
+          //label4.text='NEW RECORD';
+          //label4.fill='red';
+          //shape2.backgroundColor = 'yellow';
         }
         else{
-          label4.text='TRY AGAIN';
+          //label4.text='TRY AGAIN';
         }
+        //
 
+        Ranking(score)
+        function Ranking(score){
+          const db = firebase.firestore();
+          db.collection("Score").where("length", "==", length).orderBy('score','desc').orderBy('date', 'desc').limit(100).get().then((snapShot) => {
+            var i=1;
+            snapShot.forEach((doc) => {
+              if(score<doc.get("score")){i++}
+            });
+            console.log("rank:"+i);
+            if(i>100){label4.text='ランキング圏外';}
+            else{label4.text= i+"位にランクイン";}
+          });
+        }
         finished=true;
       }
     }
@@ -547,10 +566,8 @@ onpointstart: function(app) {
             //labeldel.text='消去:'+totaldelete;
             labelscore.text='スコア:'+(totalcombo * totaldelete);
 
-            var get = JSON.parse(localStorage.getItem('Puzzle_Score('+length+')'));
-            if(get){h = get[0];}
-            else{h=0;}
-            if(h<totalcombo * totaldelete){labelscore.fill='yellow';}
+
+            if(hi<totalcombo * totaldelete){labelscore.fill='yellow';}
 
             sprites[posy][posx].tweener.fadeOut(erase).wait(wait)
             .call(function() {
