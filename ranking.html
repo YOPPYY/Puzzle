@@ -55,7 +55,7 @@
     //1位のスコアを取得
     const first=function(){
       return new Promise(function(resolve, reject) {
-        db.collection("Score").where("length", "==", setlength).orderBy('score','desc').limit(1).get().then((snapShot) => {
+        db.collection("Puzzle_Score").where("length", "==", setlength).orderBy('score','desc').limit(1).get().then((snapShot) => {
           snapShot.forEach((doc) => {
             max = doc.get("score");
             resolve()
@@ -68,7 +68,7 @@
     //それ以外の場合、通し番号がランクになる。
     const second =function(){
       return new Promise(function(resolve, reject) {
-        db.collection("Score").where("length", "==", setlength).orderBy('score','desc').orderBy('date', 'desc').limit(100).get().then((snapShot) => {
+        db.collection("Puzzle_Score").where("length", "==", setlength).orderBy('score','desc').orderBy('date', 'desc').limit(100).get().then((snapShot) => {
           var i=1;
           var uprank=1;
           var upscore=max;
@@ -108,11 +108,11 @@
 
   function New(){
     var size;
-    db.collection('Score').get().then(snap => {
+    db.collection('Puzzle_Score').get().then(snap => {
       size = snap.size;
     });
 
-    db.collection("Score").orderBy('date','desc').limit(100).get().then((snapShot) => {
+    db.collection("Puzzle_Score").orderBy('date','desc').limit(100).get().then((snapShot) => {
       var last= JSON.parse(localStorage.getItem('Puzzle_History'));
       var i=0;
       var now=new Date().toLocaleString("ja");;

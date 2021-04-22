@@ -110,8 +110,8 @@ phina.define('Title', {
     var button2= Button({x:520,y:480,width:100,height:100,fontSize:48,text:'+',fill:'white',fontColor:'black'}).addChildTo(this);
     button2.onpointstart=function(){length= Math.min(max,length+1); num.text='レベル'+length;Ball(); Score();}
 
-    var label = Label({x:320,y:740,fontSize:32,text:'',fill:'white'}).addChildTo(self);
-
+    var label = Label({x:320,y:592+134+40,fontSize:32,text:'',fill:'white'}).addChildTo(self);
+    var label2 = Label({x:320,y:592+134-40,fontSize:32,text:'',fill:'white'}).addChildTo(self);
 
     Score();
     function Score(){
@@ -125,6 +125,17 @@ phina.define('Title', {
       else{hi=0;}
 
       label.text='ハイスコア\n'+hi;
+
+      var top=0;
+      db.collection("Puzzle_Score").where("length", "==", length).orderBy('score','desc').limit(1).get().then((snapShot) => {
+        snapShot.forEach((doc) => {
+          if(doc.get("score")){top=doc.get("score")}
+
+        });
+      }).then(function(){console.log(top);    label2.text='TOP\n'+top;})
+
+
+
     }
 
     Ball()
@@ -368,10 +379,9 @@ onpointstart: function(app) {
 
 
         var date = new Date();
-        var db = firebase.firestore();
         var setdata=[];
 
-        db.collection("Score").add({
+        db.collection("Puzzle_Score").add({
           combo:totalcombo,
           delete:totaldelete,
           score:totalcombo*totaldelete,
@@ -418,8 +428,7 @@ onpointstart: function(app) {
 
         Ranking(score)
         function Ranking(score){
-          const db = firebase.firestore();
-          db.collection("Score").where("length", "==", length).orderBy('score','desc').orderBy('date', 'desc').limit(100).get().then((snapShot) => {
+          db.collection("Puzzle_Score").where("length", "==", length).orderBy('score','desc').orderBy('date', 'desc').limit(100).get().then((snapShot) => {
             var i=1;
             snapShot.forEach((doc) => {
               if(score<doc.get("score")){i++}
