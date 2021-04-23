@@ -68,7 +68,7 @@
     //それ以外の場合、通し番号がランクになる。
     const second =function(){
       return new Promise(function(resolve, reject) {
-        db.collection("Puzzle_Score").where("length", "==", setlength).orderBy('score','desc').orderBy('date', 'desc').limit(100).get().then((snapShot) => {
+        db.collection("Puzzle_Score").where("length", "==", setlength).orderBy('score','desc').orderBy('date', 'desc').limit(1000).get().then((snapShot) => {
           var i=1;
           var uprank=1;
           var upscore=max;
@@ -112,13 +112,13 @@
       size = snap.size;
     });
 
-    db.collection("Puzzle_Score").orderBy('date','desc').limit(100).get().then((snapShot) => {
+    db.collection("Puzzle_Score").orderBy('date','desc').limit(1000).get().then((snapShot) => {
       var last= JSON.parse(localStorage.getItem('Puzzle_History'));
       var i=0;
       var now=new Date().toLocaleString("ja");;
       document.getElementById("gettime").innerHTML="<small>取得日時："+now+"</small>";
 
-      var t="<table><caption style='background-color: #cff'>最新100件（全"+ size +"件）</caption> <tr> <td class='c'>No.</td><td class='c'>色数</td> <td class='c'>コンボ</td> <td class='c'>得点</td> <td class='c'>日時</td> </tr>"
+      var t="<table><caption style='background-color: #cff'>最新1000件（全"+ size +"件）</caption> <tr> <td class='c'>No.</td><td class='c'>色数</td> <td class='c'>コンボ</td> <td class='c'>得点</td> <td class='c'>日時</td> </tr>"
       snapShot.forEach((doc) => {
 
         i++

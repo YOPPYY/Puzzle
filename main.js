@@ -376,8 +376,6 @@ onpointstart: function(app) {
 
         //送信
         //ここから
-
-
         var date = new Date();
         var setdata=[];
 
